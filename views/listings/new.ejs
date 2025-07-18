@@ -1,0 +1,58 @@
+<% layout("layouts/boilerplate") -%>
+
+<div class="container mt-5">
+  <h2>Create a New Listing</h2>
+
+  <form 
+    action="/listings" 
+    method="POST" 
+    enctype="multipart/form-data" 
+    class="needs-validation" 
+    novalidate>
+
+    <!-- Title -->
+    <div class="mb-3">
+      <label for="title" class="form-label">Title</label>
+      <input type="text" name="listing[title]" class="form-control" id="title" required />
+      <div class="invalid-feedback">Title is required.</div>
+    </div>
+
+    <!-- Description -->
+    <div class="mb-3">
+      <label for="description" class="form-label">Description</label>
+      <textarea name="listing[description]" class="form-control" id="description" rows="3" required></textarea>
+      <div class="invalid-feedback">Description is required.</div>
+    </div>
+
+    <!-- Price -->
+    <div class="mb-3">
+      <label for="price" class="form-label">Price (per night)</label>
+      <input type="number" name="listing[price]" class="form-control" id="price" required />
+      <div class="invalid-feedback">Price is required.</div>
+    </div>
+
+    <!-- Country -->
+    <div class="mb-3">
+      <label for="country" class="form-label">Country</label>
+      <input type="text" name="listing[country]" class="form-control" id="country" required />
+      <div class="invalid-feedback">Country is required.</div>
+    </div>
+
+    <!-- Location -->
+    <div class="mb-3">
+      <label for="location" class="form-label">Location</label>
+      <input type="text" name="listing[location]" class="form-control" id="location" required />
+      <div class="invalid-feedback">Location is required.</div>
+    </div>
+
+    <!-- ✅ Image Upload Field -->
+    <div class="mb-3">
+      <label for="image" class="form-label">Upload Image</label>
+      <input type="file" name="image" class="form-control" id="image"/>
+      <div class="invalid-feedback">Image is required.</div>
+    </div>
+
+    <!-- Submit Button -->
+    <button type="submit" class="btn btn-dark">Add</button>
+  </form>
+</div>

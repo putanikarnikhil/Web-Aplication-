@@ -1,0 +1,218 @@
+<% layout("layouts/boilerplate") -%>
+
+<!-- Font Awesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+<style>
+  /* Scrollable Filters */
+  #filters-wrapper {
+    overflow-x: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    padding: 1rem 0;
+    border-bottom: 1px solid #ddd;
+  }
+
+  #filters-wrapper::-webkit-scrollbar {
+    display: none;
+  }
+
+  #filters {
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    gap: 1.5rem;
+    min-width: 700px;
+  }
+
+  .filter {
+    flex: 0 0 auto;
+    text-align: center;
+    color: #444;
+    opacity: 0.7;
+    transition: opacity 0.2s ease;
+  }
+
+  .filter:hover {
+    opacity: 1;
+    cursor: pointer;
+  }
+
+  .filter i {
+    font-size: 1.5rem;
+    margin-bottom: 0.3rem;
+  }
+
+  .filter p {
+    font-size: 0.85rem;
+    margin: 0;
+  }
+
+  .tax-toggle {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-left: auto;
+    white-space: nowrap;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #333;
+  }
+
+  .form-check-input {
+    width: 2.2em;
+    height: 1.2em;
+    margin-left: 0.5rem;
+  }
+
+  .card {
+    border: none;
+    margin-bottom: 2rem;
+    transition: transform 0.2s ease-in-out;
+    height: 100%;
+  }
+
+  .card:hover {
+    transform: scale(1.02);
+  }
+
+  .listing-link {
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .card-img-top {
+    object-fit: cover;
+    height: 14rem;
+    width: 100%;
+    border-radius: 10px;
+  }
+
+  .card-body {
+    padding: 0.8rem;
+    height: 4rem;
+  }
+
+  .tax-info {
+    display: none;
+    color: #888;
+    font-size: 0.85rem;
+  }
+
+  @media (max-width: 768px) {
+    #filters {
+      gap: 1rem;
+    }
+
+    .tax-toggle {
+      margin-top: 1rem;
+      width: 100%;
+      justify-content: flex-start;
+    }
+
+    .card-img-top {
+      height: 10rem;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .filter i {
+      font-size: 1.2rem;
+    }
+
+    .filter p {
+      font-size: 0.75rem;
+    }
+
+    .tax-toggle {
+      font-size: 0.8rem;
+    }
+
+    .card-img-top {
+      height: 8rem;
+    }
+  }
+</style>
+
+<!-- Filters Bar -->
+<div id="filters-wrapper" class="position-relative">
+  <div id="filters">
+    <div class="filter"><i class="fa-solid fa-fire"></i><p>Trending</p></div>
+    <div class="filter"><i class="fa-solid fa-bed"></i><p>Rooms</p></div>
+    <div class="filter"><i class="fa-solid fa-mountain-city"></i><p>Iconic cities</p></div>
+    <div class="filter"><i class="fa-solid fa-mountain"></i><p>Mountains</p></div>
+    <div class="filter"><i class="fa-brands fa-fort-awesome"></i><p>Castles</p></div>
+    <div class="filter"><i class="fa-solid fa-person-swimming"></i><p>Pools</p></div>
+    <div class="filter"><i class="fa-solid fa-campground"></i><p>Camping</p></div>
+    <div class="filter"><i class="fa-solid fa-tractor"></i><p>Farms</p></div>
+    <div class="filter"><i class="fa-solid fa-snowflake"></i><p>Arctic</p></div>
+    <div class="filter"><i class="fa-solid fa-umbrella-beach"></i><p>Beach</p></div>
+    <div class="filter"><i class="fa-solid fa-paw"></i><p>Pet Friendly</p></div>
+    <div class="filter"><i class="fa-solid fa-house-chimney"></i><p>Villas</p></div>
+    <div class="tax-toggle">
+      Display total after taxes
+      <div class="form-switch">
+        <input class="form-check-input" type="checkbox" role="switch" id="gstToggle">
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Listings Grid -->
+<div class="container mt-4">
+  <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
+    <% for (let listing of allListings) { %>
+      <div class="col listing-card" data-title="<%= listing.title.toLowerCase() %>" data-location="<%= listing.location.toLowerCase() %>">
+        <div class="card shadow-sm">
+          <a href="/listings/<%= listing._id %>" class="listing-link">
+            <% if (listing.image && listing.image.url) { %>
+              <img src="<%= listing.image.url %>" class="card-img-top" alt="listing image">
+            <% } else { %>
+              <img src="https://via.placeholder.com/300x200?text=No+Image" class="card-img-top" alt="no image">
+            <% } %>
+            <div class="card-body">
+              <p class="card-text mb-1"><strong><%= listing.title %></strong></p>
+              <p class="mb-0 price-text" data-price="<%= listing.price %>">
+                ₹ <%= listing.price.toLocaleString("en-IN") %> /night
+                <span class="tax-info"> &nbsp;+18% GST</span>
+              </p>
+            </div>
+          </a>
+        </div>
+      </div>
+    <% } %>
+  </div>
+</div>
+
+<script>
+  const gstSwitch = document.getElementById("gstToggle");
+
+  function updatePriceDisplay(showGST) {
+    const priceElems = document.querySelectorAll(".price-text");
+    priceElems.forEach(p => {
+      const base = parseFloat(p.dataset.price);
+      const taxInfo = p.querySelector(".tax-info");
+
+      if (showGST) {
+        const total = Math.round(base * 1.18);
+        p.firstChild.textContent = `₹ ${total.toLocaleString("en-IN")} /night `;
+        taxInfo.style.display = "inline";
+      } else {
+        p.firstChild.textContent = `₹ ${base.toLocaleString("en-IN")} /night `;
+        taxInfo.style.display = "none";
+      }
+    });
+  }
+
+  document.addEventListener("DOMContentLoaded", () => {
+    const isChecked = localStorage.getItem("gstSwitch") === "true";
+    gstSwitch.checked = isChecked;
+    updatePriceDisplay(isChecked);
+  });
+
+  gstSwitch.addEventListener("change", () => {
+    const checked = gstSwitch.checked;
+    localStorage.setItem("gstSwitch", checked);
+    updatePriceDisplay(checked);
+  });
+</script>

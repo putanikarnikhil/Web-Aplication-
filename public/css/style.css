@@ -1,0 +1,194 @@
+/* body {
+    font-family: 'Plus Jakarta Sans', sans-serif !important;
+}
+
+
+
+.navbar {
+    height: 5rem;
+}
+
+.fa-compass{
+    color: #fe424d;
+    font-size: 2rem;
+}
+
+.nav-link{
+    color: #222222;
+}
+
+.f-info-links a{
+    text-decoration:none ;
+    color: #222222;
+}
+
+.f-info-links a:hover{
+    text-decoration: underline;
+}
+
+.f-info-links ,
+.f-info-socials , .f-info-brand{
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+}
+
+.f-info-socials i{
+    font-size: 1.5rem;
+    margin-right: 1rem;
+
+
+}
+
+
+.f-info{
+    text-align: center;
+    background-color:#ebebeb ;
+    height: 8rem;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content:center ;
+    align-items: space-evenly;
+
+}
+
+.card{
+    border: none !important;
+    margin-bottom: 2rem;
+}
+
+.card-img-top{
+    border-radius: 1rem !important;
+    width: 100% !important;
+    object-fit: cover !important;
+
+}
+
+.card-body{
+    padding:0 !important ;
+}
+
+.card-text p{
+    font: weight 400 !important;
+
+} */
+
+
+/* Font Import */
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap');
+
+body {
+    font-family: 'Plus Jakarta Sans', sans-serif !important;
+    font-weight: 400;
+    margin: 0;
+    padding: 0;
+}
+
+/* Typography Weights */
+.light {
+    font-weight: 300;
+}
+.medium {
+    font-weight: 500;
+}
+.semibold {
+    font-weight: 600;
+}
+
+/* Navbar */
+.navbar {
+    height: 5rem;
+}
+.fa-compass {
+    color: #fe424d;
+    font-size: 2rem;
+}
+.nav-link {
+    color: #222222;
+}
+
+/* Footer Info */
+.f-info-links a {
+    text-decoration: none;
+    color: #222222;
+}
+.f-info-links a:hover {
+    text-decoration: underline;
+}
+
+.f-info-links,
+.f-info-socials,
+.f-info-brand {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.f-info-socials i {
+    font-size: 1.5rem;
+    margin-right: 1rem;
+}
+
+.f-info {
+    text-align: center;
+    background-color: #ebebeb;
+    height: 8rem;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Cards */
+.card {
+    border: none !important;
+    margin: 1rem; 
+    padding: 0.5rem; 
+}
+
+.card-img-top {
+    border-radius: 1rem !important;
+    width: 100% !important;
+    height: 15rem;
+    object-fit: cover !important;
+    margin-bottom: 0.5rem; /* Adds spacing below the image */
+}
+
+.card-body {
+    padding: 0 !important;
+}
+
+.card-text {
+    font-weight: 400 !important;
+}
+
+
+.listing-link{
+    text-decoration:none;
+
+}
+
+
+.card-img-overlay{
+    opacity: 0;
+}
+
+
+.card-img-overlay:hover{
+    opacity: 0.2;
+    background-color: whitesmoke;
+}
+
+
+#map {
+  width: 280px;
+  height: 180px;
+  max-width: 800px;
+  margin: 40px auto;         /* centers the map horizontally */
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e0e0e0; /* light border for subtle definition */
+}

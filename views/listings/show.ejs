@@ -1,0 +1,211 @@
+<% layout("layouts/boilerplate") -%>
+
+<!-- Font Awesome CDN for star ratings -->
+<link
+  rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+/>
+
+<!-- MapTiler SDK CSS -->
+<link href="https://unpkg.com/@maptiler/sdk@latest/dist/maptiler-sdk.css" rel="stylesheet" />
+
+<style>
+  #map {
+    width: 100%;
+    height: 400px;
+    margin-top: 40px;
+    border-radius: 10px;
+    border-width: 3px;
+    border-color: rgb(64, 82, 94);
+    position: relative;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .map-style-controls {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background: rgba(8, 7, 7, 0.95);
+    padding: 8px 12px;
+    border-radius: 8px;
+    z-index: 1000;
+    font-size: 0.9rem;
+    box-shadow: 0 1px 6px rgba(0,0,0,0.2);
+  }
+
+  .map-style-controls label {
+    margin-right: 10px;
+    cursor: pointer;
+    color:azure
+  }
+
+  .map-style-controls input {
+    margin-right: 4px;
+    background-color: rgb(19, 218, 224);
+  }
+</style>
+
+<div class="container my-5">
+  <!-- Listing Title -->
+  <h1 class="mb-4 text-center"><%= listing.title %></h1>
+
+  <!-- Listing Image -->
+  <div class="text-center">
+    <img
+      src="<%= listing.image.url %>"
+      alt="Listing Image"
+      class="img-fluid rounded shadow mb-4"
+      style="width: 100%; max-width: 800px; height: 400px; object-fit: cover;"
+    />
+  </div>
+
+  <!-- Listing Info -->
+  <div class="text-center mb-5">
+    <p><strong>Price:</strong> ₹<%= listing.price %></p>
+    <p><strong>Location:</strong> <%= listing.location %></p>
+    <p><strong>Description:</strong> <%= listing.description %></p>
+    <p><strong>Owned by:</strong> <%= listing.owner?.username || "Unknown" %></p>
+  </div>
+
+  <!-- Edit/Delete Buttons for Owner -->
+  <% if (currUser && String(listing.owner?._id || listing.owner) === String(currUser._id)) { %>
+    <div class="text-center mb-5">
+      <a href="/listings/<%= listing._id %>/edit" class="btn btn-warning me-2">Edit</a>
+      <form action="/listings/<%= listing._id %>?_method=DELETE" method="POST" class="d-inline">
+        <button class="btn btn-danger">Delete</button>
+      </form>
+    </div>
+  <% } %>
+
+  <!-- Map Section with Style Switcher -->
+  <div id="map">
+    <div class="map-style-controls">
+      <label><input type="radio" name="basemap" value="streets" checked /> Streets</label>
+      <label><input type="radio" name="basemap" value="satellite" /> Satellite</label>
+      <label><input type="radio" name="basemap" value="light" /> Light</label>
+      <label><input type="radio" name="basemap" value="dark" /> Dark</label>
+      <label><input type="radio" name="basemap" value="outdoors" /> Outdoors</label>
+    </div>
+  </div>
+
+  <!-- Reviews Section -->
+  <section class="mt-5 text-start mx-auto" style="max-width: 700px;">
+    <h3 class="mb-3 text-primary">Reviews</h3>
+
+    <% if (listing.reviews.length === 0) { %>
+      <p class="text-muted">No reviews yet.</p>
+    <% } else { %>
+      <% listing.reviews.forEach(review => { %>
+        <div class="border rounded p-3 mb-3 bg-light">
+          <p class="mb-1">
+            <strong>Rating:</strong>
+            <span style="color: gold;">
+              <%= "★".repeat(review.rating) %><%= "☆".repeat(5 - review.rating) %>
+            </span>
+          </p>
+          <p class="mb-1"><i>@ <%= review.author?.username || "Anonymous" %></i></p>
+          <p><%= review.comment %></p>
+
+          <% if (currUser && review.author && String(review.author._id || review.author) === String(currUser._id)) { %>
+            <form action="/listings/<%= listing._id %>/reviews/<%= review._id %>?_method=DELETE" method="POST">
+              <button class="btn btn-sm btn-outline-danger">Delete Review</button>
+            </form>
+          <% } %>
+        </div>
+      <% }) %>
+    <% } %>
+  </section>
+
+  <!-- Add Review Form (only for non-owners) -->
+  <% if (currUser && String(listing.owner?._id || listing.owner) !== String(currUser._id)) { %>
+    <div class="mt-4 mx-auto" style="max-width: 700px;">
+      <h4 class="text-primary">Leave a Review</h4>
+      <form action="/listings/<%= listing._id %>/reviews" method="POST">
+
+        <!-- Star Rating with Hover -->
+        <div class="mb-3">
+          <label class="form-label">Your Rating</label>
+          <div id="hoverRating" class="mb-2">
+            <% for (let i = 1; i <= 5; i++) { %>
+              <i class="fa-regular fa-star fa-2x text-warning star-hover" data-index="<%= i %>"></i>
+            <% } %>
+          </div>
+          <input type="hidden" name="review[rating]" id="hoverRatingInput" value="0" />
+        </div>
+
+        <!-- Comment -->
+        <div class="mb-3">
+          <label for="comment" class="form-label">Comment</label>
+          <textarea name="review[comment]" id="comment" class="form-control" rows="3" required></textarea>
+        </div>
+
+        <button class="btn btn-primary">Submit Review</button>
+      </form>
+    </div>
+  <% } %>
+</div>
+
+<!-- JS for Star Rating -->
+<script>
+  const hoverStars = document.querySelectorAll(".star-hover");
+  const hoverRatingInput = document.getElementById("hoverRatingInput");
+  let currentRating = 0;
+
+  hoverStars.forEach((star, index) => {
+    const value = index + 1;
+
+    star.addEventListener("mouseenter", () => highlightStars(value));
+    star.addEventListener("mouseleave", () => highlightStars(currentRating));
+    star.addEventListener("click", () => {
+      currentRating = value;
+      hoverRatingInput.value = currentRating;
+    });
+  });
+
+  function highlightStars(value) {
+    hoverStars.forEach((star, index) => {
+      if (index < value) {
+        star.classList.add("fa-solid");
+        star.classList.remove("fa-regular");
+      } else {
+        star.classList.add("fa-regular");
+        star.classList.remove("fa-solid");
+      }
+    });
+  }
+
+  highlightStars(currentRating);
+</script>
+
+<!-- MapTiler SDK JS -->
+<script src="https://unpkg.com/@maptiler/sdk@latest/dist/maptiler-sdk.umd.min.js"></script>
+
+<!-- Map Initialization + Style Switcher -->
+<script>
+  maptilersdk.config.apiKey = 'IhrHJOBY0ao9GYMhEPIj';
+
+  const styleMap = {
+    streets: maptilersdk.MapStyle.STREETS,
+    satellite: maptilersdk.MapStyle.SATELLITE,
+    light: maptilersdk.MapStyle.LIGHT,
+    dark: maptilersdk.MapStyle.DARK,
+    outdoors: maptilersdk.MapStyle.OUTDOOR
+  };
+
+  const centerCoords = [77.2090, 28.6139]; // Connaught Place, Delhi
+
+  const map = new maptilersdk.Map({
+    container: 'map',
+    style: styleMap.streets,
+    center: centerCoords,
+    zoom: 13
+  });
+
+  new maptilersdk.Marker().setLngLat(centerCoords).addTo(map);
+
+  document.querySelectorAll('input[name="basemap"]').forEach(input => {
+    input.addEventListener('change', function () {
+      map.setStyle(styleMap[this.value]);
+    });
+  });
+</script>

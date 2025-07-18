@@ -1,0 +1,26 @@
+<% layout("layouts/boilerplate") -%>
+
+<h1 class="my-4">Explore New Listings</h1>
+
+<div class="row row-cols-lg-4 row-cols-md-2 row-cols-sm-1 g-4">
+  <% for(let listing of allListings) { %>
+    <div class="col">
+      <div class="card h-100 shadow-sm">
+        <a href="/listings/<%= listing._id %>" class="text-decoration-none text-dark">
+          <% if (listing.image && typeof listing.image === 'string') { %>
+            <img src="<%= listing.image %>" class="card-img-top" alt="listing image">
+          <% } else if (listing.image?.url) { %>
+            <img src="<%= listing.image.url %>" class="card-img-top" alt="listing image" style="height: 200px; object-fit: cover;">
+          <% } else { %>
+            <img src="/images/placeholder.jpg" class="card-img-top" alt="no image available">
+          <% } %>
+
+          <div class="card-body">
+            <h5 class="card-title"><%= listing.title %></h5>
+            <p class="card-text">₹ <%= listing.price?.toLocaleString("en-IN") ?? "N/A" %> /night</p>
+          </div>
+        </a>
+      </div>
+    </div>
+  <% } %>
+</div>

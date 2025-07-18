@@ -1,0 +1,34 @@
+/* Rating Container */
+.rating {
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: center;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+/* Hide radio inputs */
+.rating input {
+    display: none;
+}
+
+/* Style stars */
+.rating label {
+    font-size: 2rem;
+    color: #ccc;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+/* Hover and checked color */
+.rating input:checked ~ label,
+.rating label:hover,
+.rating label:hover ~ label {
+    color: #ffc107;
+}
+
+/* Optional: prevent flicker when clicking */
+.rating input:checked + label:hover,
+.rating input:checked + label:hover ~ label {
+    color: #ffca28;
+}
