@@ -108,4 +108,4 @@ module.exports.destroyListing = async (req, res) => {
   await Listing.findByIdAndDelete(id);
   req.flash("success", "Listing deleted");
   res.redirect("/listings");
-};
+};     

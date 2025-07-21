@@ -26,20 +26,20 @@ const userRouter = require("./routes/user.js");
 // MongoDB Atlas URL from .env
 const dbUrl = process.env.ATLASDB_URL;
 
-// ✅ MongoDB Connection
+//  MongoDB Connection
 console.log("🌐 Connecting to DB...");
 mongoose.connect(dbUrl)
   .then(() => {
-    console.log("✅ Connected to MongoDB Atlas");
+    console.log(" Connected to MongoDB Atlas");
     app.listen(8080, () => {
-      console.log("🚀 Server is listening on port 8080");
+      console.log(" Server is listening on port 8080");
     });
   })
   .catch((err) => {
-    console.error("❌ DB Connection Error:", err);
+    console.error(" DB Connection Error:", err);
   });
 
-// ✅ View Engine & Middleware
+//  View Engine & Middleware
 app.engine("ejs", ejsMate);
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
@@ -51,7 +51,7 @@ app.use(express.static(path.join(__dirname, "public")));
 const store = MongoStore.create({
   mongoUrl: dbUrl,
   crypto: {
-    secret:"mysupersecretcode"
+    secret: process.env.SECRET, 
   },
   touchAfter: 24 * 3600,
 });
@@ -60,7 +60,7 @@ store.on("error", () =>{
   console.log("ERROR in mongo session store", err)
 });
 
-// ✅ Session & Flash
+// Session & Flash
 const sessionOptions = {
   store,
   secret: "mysupersecretcode",
@@ -76,14 +76,14 @@ const sessionOptions = {
 app.use(session(sessionOptions));
 app.use(flash());
 
-// ✅ Passport Config
+//  Passport Config
 app.use(passport.initialize());
 app.use(passport.session());
 passport.use(new LocalStrategy(User.authenticate()));
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
-// ✅ Global Middleware for Flash & Current User
+//  Global Middleware for Flash & Current User
 app.use((req, res, next) => {
   res.locals.success = req.flash("success");
   res.locals.error = req.flash("error");
@@ -91,7 +91,7 @@ app.use((req, res, next) => {
   next();
 });
 
-// ✅ Home Route
+//  Home Route
 app.get("/", async (req, res, next) => {
   try {
     const allListings = await Listing.find({}).sort({ _id: -1 }).limit(6);
@@ -101,12 +101,12 @@ app.get("/", async (req, res, next) => {
   }
 });
 
-// ✅ Routes
+//  Routes
 app.use("/listings", listingRouter);
 app.use("/listings/:id/reviews", reviewRouter);
 app.use("/", userRouter);
 
-// ✅ Error Handler
+//  Error Handler
 app.use((err, req, res, next) => {
   const { statusCode = 500, message = "Something Went Wrong" } = err;
   res.status(statusCode).render("error.ejs", { statusCode, message });

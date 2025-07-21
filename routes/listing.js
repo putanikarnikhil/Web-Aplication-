@@ -12,7 +12,7 @@ router.route("/")
   .get(wrapAsync(listingController.index))
   .post(
     isLoggedIn,
-    upload.single("image"), // ✅ Multer Cloudinary
+    upload.single("image"), // Multer Cloudinary
     validateListing,
     wrapAsync(listingController.createListing)
   );
