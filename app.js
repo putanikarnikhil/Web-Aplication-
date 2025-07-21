@@ -10,7 +10,7 @@ const path = require("path");
 const methodOverride = require("method-override");
 const ejsMate = require("ejs-mate");
 const session = require("express-session");
-const MongoStore = require('connect-mongo');
+const MongoStore = require("connect-mongo");
 const flash = require("connect-flash");
 const passport = require("passport");
 const LocalStrategy = require("passport-local");
@@ -26,20 +26,24 @@ const userRouter = require("./routes/user.js");
 // MongoDB Atlas URL from .env
 const dbUrl = process.env.ATLASDB_URL;
 
-//  MongoDB Connection
-console.log("🌐 Connecting to DB...");
-mongoose.connect(dbUrl)
-  .then(() => {
-    console.log(" Connected to MongoDB Atlas");
-    app.listen(8080, () => {
-      console.log(" Server is listening on port 8080");
-    });
-  })
-  .catch((err) => {
-    console.error(" DB Connection Error:", err);
-  });
+// MongoDB Connection
+async function main() {
+  try {
+    console.log("🌐 Connecting to DB...");
+    await mongoose.connect(dbUrl);
+    console.log("✅ Connected to MongoDB Atlas");
 
-//  View Engine & Middleware
+    const PORT = process.env.PORT || 8080;
+    app.listen(PORT, () => {
+      console.log(`🚀 Server is listening on port ${PORT}`);
+    });
+  } catch (err) {
+    console.error("❌ DB Connection Error:", err);
+  }
+}
+main();
+
+// View Engine & Middleware
 app.engine("ejs", ejsMate);
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
@@ -47,23 +51,23 @@ app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride("_method"));
 app.use(express.static(path.join(__dirname, "public")));
 
-
+// MongoDB Session Store
 const store = MongoStore.create({
   mongoUrl: dbUrl,
   crypto: {
-    secret: process.env.SECRET, 
+    secret: process.env.SECRET,
   },
   touchAfter: 24 * 3600,
 });
 
-store.on("error", () =>{
-  console.log("ERROR in mongo session store", err)
+store.on("error", function (err) {
+  console.log("❌ ERROR in mongo session store", err);
 });
 
 // Session & Flash
 const sessionOptions = {
   store,
-  secret: "mysupersecretcode",
+  secret: process.env.SECRET,
   resave: false,
   saveUninitialized: true,
   cookie: {
@@ -76,14 +80,14 @@ const sessionOptions = {
 app.use(session(sessionOptions));
 app.use(flash());
 
-//  Passport Config
+// Passport Config
 app.use(passport.initialize());
 app.use(passport.session());
 passport.use(new LocalStrategy(User.authenticate()));
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
-//  Global Middleware for Flash & Current User
+// Global Middleware
 app.use((req, res, next) => {
   res.locals.success = req.flash("success");
   res.locals.error = req.flash("error");
@@ -91,7 +95,7 @@ app.use((req, res, next) => {
   next();
 });
 
-//  Home Route
+// Home Route
 app.get("/", async (req, res, next) => {
   try {
     const allListings = await Listing.find({}).sort({ _id: -1 }).limit(6);
@@ -101,12 +105,12 @@ app.get("/", async (req, res, next) => {
   }
 });
 
-//  Routes
+// Routers
 app.use("/listings", listingRouter);
 app.use("/listings/:id/reviews", reviewRouter);
 app.use("/", userRouter);
 
-//  Error Handler
+// Error Handler
 app.use((err, req, res, next) => {
   const { statusCode = 500, message = "Something Went Wrong" } = err;
   res.status(statusCode).render("error.ejs", { statusCode, message });
