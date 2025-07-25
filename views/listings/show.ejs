@@ -1,3 +1,4 @@
+
 <% layout("layouts/boilerplate") -%>
 
 <!-- Font Awesome CDN for star ratings -->
@@ -44,10 +45,14 @@
     background-color: rgb(19, 218, 224);
   }
 </style>
+<div class="container my-5 p-4 rounded-4 shadow-lg" style="background: linear-gradient(135deg, #fef6e4, #fcd5ce);">
 
-<div class="container my-5">
-  <!-- Listing Title -->
-  <h1 class="mb-4 text-center"><%= listing.title %></h1>
+  <!-- Horizontal Flex Layout -->
+  <div class="d-flex flex-wrap gap-4 justify-content-between">
+  
+    <div class="flex-grow-1 flex-shrink-1 rounded-3 overflow-hidden shadow-sm" style="min-width: 320px; background-color: #fff;">
+           <!-- Title -->
+  <h1 class="mb-4 text-center text-primary fw-bold"><%= listing.title %></h1>
 
   <!-- Listing Image -->
   <div class="text-center">
@@ -58,45 +63,65 @@
       style="width: 100%; max-width: 800px; height: 400px; object-fit: cover;"
     />
   </div>
-
-  <!-- Listing Info -->
-  <div class="text-center mb-5">
-    <p><strong>Price:</strong> ₹<%= listing.price %></p>
-    <p><strong>Location:</strong> <%= listing.location %></p>
-    <p><strong>Description:</strong> <%= listing.description %></p>
-    <p><strong>Owned by:</strong> <%= listing.owner?.username || "Unknown" %></p>
-  </div>
-
-  <!-- Edit/Delete Buttons for Owner -->
-  <% if (currUser && String(listing.owner?._id || listing.owner) === String(currUser._id)) { %>
-    <div class="text-center mb-5">
-      <a href="/listings/<%= listing._id %>/edit" class="btn btn-warning me-2">Edit</a>
-      <form action="/listings/<%= listing._id %>?_method=DELETE" method="POST" class="d-inline">
-        <button class="btn btn-danger">Delete</button>
-      </form>
     </div>
-  <% } %>
 
-  <!-- Map Section with Style Switcher -->
-  <div id="map">
-    <div class="map-style-controls">
-      <label><input type="radio" name="basemap" value="streets" checked /> Streets</label>
-      <label><input type="radio" name="basemap" value="satellite" /> Satellite</label>
-      <label><input type="radio" name="basemap" value="light" /> Light</label>
-      <label><input type="radio" name="basemap" value="dark" /> Dark</label>
-      <label><input type="radio" name="basemap" value="outdoors" /> Outdoors</label>
+
+
+
+    <!-- Right Side: Booking Form and Listing Info -->
+    <div class="d-flex flex-column gap-3 justify-content-between" style="min-width: 300px; max-width: 350px;">
+      
+      <!-- Booking Form -->
+      <div class="p-3 rounded bg-white shadow-sm">
+        <form action="/bookings/<%= listing._id %>" method="POST">
+          <h6 class="fw-bold text-success mb-3">Book This Place</h6>
+          <div class="d-flex justify-content-between gap-2 mb-2">
+            <div class="flex-fill">
+              <label for="checkIn" class="form-label mb-1">Check In</label>
+              <input type="date" name="checkIn" class="form-control form-control-sm" required>
+            </div>
+            <div class="flex-fill">
+              <label for="checkOut" class="form-label mb-1">Check Out</label>
+              <input type="date" name="checkOut" class="form-control form-control-sm" required>
+            </div>
+          </div>
+          <div class="mb-2">
+            <label for="guests" class="form-label mb-1">Guests</label>
+            <input type="number" name="guests" class="form-control form-control-sm" min="1" value="1" required>
+          </div>
+          <button class="btn btn-success btn-sm w-100 mt-2">Book Now</button>
+        </form>
+      </div>
+
+      <!-- Listing Info -->
+      <div class="p-3 rounded bg-white shadow-sm">
+        <p><strong>💰 Price:</strong> ₹<%= listing.price %></p>
+        <p><strong>📍 Location:</strong> <%= listing.location %></p>
+        <p><strong>📝 Description:</strong> <%= listing.description %></p>
+        <p><strong>👤 Owned by:</strong> <%= listing.owner?.username || "Unknown" %></p>
+      </div>
+
+      <!-- Owner Buttons -->
+      <% if (currUser && String(listing.owner?._id || listing.owner) === String(currUser._id)) { %>
+        <div class="text-center">
+          <a href="/listings/<%= listing._id %>/edit" class="btn btn-warning btn-sm me-2">Edit</a>
+          <form action="/listings/<%= listing._id %>?_method=DELETE" method="POST" class="d-inline">
+            <button class="btn btn-danger btn-sm">Delete</button>
+          </form>
+        </div>
+      <% } %>
     </div>
   </div>
 
   <!-- Reviews Section -->
-  <section class="mt-5 text-start mx-auto" style="max-width: 700px;">
+  <section class="mt-5">
     <h3 class="mb-3 text-primary">Reviews</h3>
 
     <% if (listing.reviews.length === 0) { %>
       <p class="text-muted">No reviews yet.</p>
     <% } else { %>
       <% listing.reviews.forEach(review => { %>
-        <div class="border rounded p-3 mb-3 bg-light">
+        <div class="border rounded p-3 mb-3 bg-white shadow-sm">
           <p class="mb-1">
             <strong>Rating:</strong>
             <span style="color: gold;">
@@ -105,7 +130,6 @@
           </p>
           <p class="mb-1"><i>@ <%= review.author?.username || "Anonymous" %></i></p>
           <p><%= review.comment %></p>
-
           <% if (currUser && review.author && String(review.author._id || review.author) === String(currUser._id)) { %>
             <form action="/listings/<%= listing._id %>/reviews/<%= review._id %>?_method=DELETE" method="POST">
               <button class="btn btn-sm btn-outline-danger">Delete Review</button>
@@ -116,13 +140,13 @@
     <% } %>
   </section>
 
-  <!-- Add Review Form (only for non-owners) -->
+  <!-- Add Review Form -->
   <% if (currUser && String(listing.owner?._id || listing.owner) !== String(currUser._id)) { %>
-    <div class="mt-4 mx-auto" style="max-width: 700px;">
+    <div class="mt-4">
       <h4 class="text-primary">Leave a Review</h4>
       <form action="/listings/<%= listing._id %>/reviews" method="POST">
 
-        <!-- Star Rating with Hover -->
+        <!-- Star Rating -->
         <div class="mb-3">
           <label class="form-label">Your Rating</label>
           <div id="hoverRating" class="mb-2">
@@ -144,6 +168,16 @@
     </div>
   <% } %>
 </div>
+
+  <!-- Edit/Delete Buttons for Owner -->
+  <% if (currUser && String(listing.owner?._id || listing.owner) === String(currUser._id)) { %>
+    <div class="text-center mt-3">
+      <a href="/listings/<%= listing._id %>/edit" class="btn btn-warning btn-sm me-2">Edit</a>
+      <form action="/listings/<%= listing._id %>?_method=DELETE" method="POST" class="d-inline">
+        <button class="btn btn-danger btn-sm">Delete</button>
+      </form>
+    </div>
+  <% } %>
 
 <!-- JS for Star Rating -->
 <script>

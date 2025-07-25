@@ -1,40 +1,37 @@
+require("dotenv").config({ path: "../.env" });
+
 const mongoose = require("mongoose");
 const initData = require("./data.js");
 const Listing = require("../models/listing.js");
 
-const MONGO_URL = process.env.MONGO_URL;
+const ATLASDB_URL = process.env.ATLASDB_URL;
 
-main()
-  .then(() => {
-    console.log("✅ Connected to DB");
-    return initDB(); // Safe seeding
-  })
-  .then(() => {
-    console.log("✅ Data initialization completed");
-    mongoose.connection.close(); // Close DB
-  })
-  .catch((err) => {
-    console.error("❌ Error initializing database:", err);
-    mongoose.connection.close(); // Still close on error
-  });
+console.log("🔍 ATLASDB_URL is:", ATLASDB_URL); // debug output
 
 async function main() {
-  await mongoose.connect(MONGO_URL);
-}
+  try {
+    await mongoose.connect(ATLASDB_URL);
+    console.log("✅ Connected to DB");
 
-async function initDB() {
-  const existingCount = await Listing.countDocuments();
-  if (existingCount === 0) {
-    // Add owner to each listing
-    initData.data = initData.data.map((obj) => ({
+    // 1. Delete existing listings
+    await Listing.deleteMany({});
+    console.log("🧹 Deleted existing listings");
+
+    // 2. Add owner to each listing
+    const listingsWithOwner = initData.map((obj) => ({
       ...obj,
-      owner: "686535b772ab689f4ebfa111" // Replace with a valid user ID
+      owner: "686535b772ab689f4ebfa111", // ✅ ensure this _id exists
     }));
 
-    await Listing.insertMany(initData.data);
-    console.log("✅ Seed data inserted.");
-  } else {
-    console.log("ℹ️ Listings already exist. Skipping seeding.");
+    // 3. Insert new listings
+    await Listing.insertMany(listingsWithOwner);
+    console.log("🌱 Inserted all listings from data.js");
+
+  } catch (err) {
+    console.error("❌ Error initializing database:", err);
+  } finally {
+    mongoose.connection.close();
   }
 }
 
+main();

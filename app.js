@@ -22,6 +22,7 @@ const ExpressError = require("./utils/ExpressError.js");
 const listingRouter = require("./routes/listing.js");
 const reviewRouter = require("./routes/review.js");
 const userRouter = require("./routes/user.js");
+const bookingRouter = require("./routes/booking.js"); // ✅ Booking Route
 
 // MongoDB Atlas URL from .env
 const dbUrl = process.env.ATLASDB_URL;
@@ -59,7 +60,6 @@ const store = MongoStore.create({
   },
   touchAfter: 24 * 3600,
 });
-
 store.on("error", function (err) {
   console.log("❌ ERROR in mongo session store", err);
 });
@@ -76,7 +76,6 @@ const sessionOptions = {
     httpOnly: true,
   },
 };
-
 app.use(session(sessionOptions));
 app.use(flash());
 
@@ -105,9 +104,10 @@ app.get("/", async (req, res, next) => {
   }
 });
 
-// Routers
+// Use Routes
 app.use("/listings", listingRouter);
 app.use("/listings/:id/reviews", reviewRouter);
+app.use("/bookings", bookingRouter); // ✅ Correct
 app.use("/", userRouter);
 
 // Error Handler
