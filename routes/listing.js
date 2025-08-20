@@ -17,7 +17,7 @@ router.get("/seed", async (req, res) => {
     if (count === 0) {
       const seeded = initData.data.map((obj) => ({
         ...obj,
-        owner: "686535b772ab689f4ebfa111", // 🔁 Replace with valid user ID
+        owner: "686535b772ab689f4ebfa111", // ⚠️ Replace with a valid user ID
       }));
       await Listing.insertMany(seeded);
       res.send("✅ Seed data inserted!");
@@ -30,25 +30,8 @@ router.get("/seed", async (req, res) => {
   }
 });
 
-// 🔍 Index route with search
-router.get("/", wrapAsync(async (req, res) => {
-  const { search } = req.query;
-  let listings;
-  if (search) {
-    const regex = new RegExp(escapeRegex(search), "i");
-    listings = await Listing.find({
-      $or: [
-        { title: regex },
-        { location: regex },
-        { description: regex }
-      ]
-    });
-  } else {
-    listings = await Listing.find({});
-  }
-
-  res.render("listings/index", { allListings: listings, search }); // ✅ fixed here
-}));
+// 📃 Index route (search + category handled in controller)
+router.get("/", wrapAsync(listingController.index));
 
 // 🆕 New listing form
 router.get("/new", isLoggedIn, listingController.renderNewForm);
@@ -66,7 +49,12 @@ router.post(
 router.get("/:id", wrapAsync(listingController.showListing));
 
 // ✏️ Edit listing form
-router.get("/:id/edit", isLoggedIn, isOwner, wrapAsync(listingController.editListing));
+router.get(
+  "/:id/edit",
+  isLoggedIn,
+  isOwner,
+  wrapAsync(listingController.editListing)
+);
 
 // 🔁 Update listing
 router.put(
@@ -79,11 +67,11 @@ router.put(
 );
 
 // ❌ Delete listing
-router.delete("/:id", isLoggedIn, isOwner, wrapAsync(listingController.destroyListing));
-
-// 🛡️ Escape regex special characters
-function escapeRegex(text) {
-  return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
-}
+router.delete(
+  "/:id",
+  isLoggedIn,
+  isOwner,
+  wrapAsync(listingController.destroyListing)
+);
 
 module.exports = router;

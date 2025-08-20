@@ -46,6 +46,22 @@
       <div class="invalid-feedback">Please enter a country.</div>
     </div>
 
+    <!-- ✅ Category Dropdown -->
+    <div class="mb-3">
+      <label for="category" class="form-label">Category</label>
+      <select name="listing[category]" id="category" class="form-control" required>
+        <option value="Trending" <%= listing.category === "Trending" ? "selected" : "" %>>Trending</option>
+        <option value="Rooms" <%= listing.category === "Rooms" ? "selected" : "" %>>Rooms</option>
+        <option value="Iconic cities" <%= listing.category === "Iconic cities" ? "selected" : "" %>>Iconic cities</option>
+        <option value="Mountains" <%= listing.category === "Mountains" ? "selected" : "" %>>Mountains</option>
+        <option value="Castles" <%= listing.category === "Castles" ? "selected" : "" %>>Castles</option>
+        <option value="Pools" <%= listing.category === "Pools" ? "selected" : "" %>>Pools</option>
+        <option value="Camping" <%= listing.category === "Camping" ? "selected" : "" %>>Camping</option>
+        <option value="Beaches" <%= listing.category === "Beaches" ? "selected" : "" %>>Beaches</option>
+      </select>
+      <div class="invalid-feedback">Please select a category.</div>
+    </div>
+
     <!-- Image Preview -->
     <% if (listing.image && listing.image.url) { %>
       <div class="mb-3">

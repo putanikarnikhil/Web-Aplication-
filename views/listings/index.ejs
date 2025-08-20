@@ -13,18 +13,21 @@
 <!-- Filters Bar -->
 <div id="filters-wrapper" class="position-relative">
   <div id="filters">
-    <div class="filter"><i class="fa-solid fa-fire"></i><p>Trending</p></div>
-    <div class="filter"><i class="fa-solid fa-bed"></i><p>Rooms</p></div>
-    <div class="filter"><i class="fa-solid fa-mountain-city"></i><p>Iconic cities</p></div>
-    <div class="filter"><i class="fa-solid fa-mountain"></i><p>Mountains</p></div>
-    <div class="filter"><i class="fa-brands fa-fort-awesome"></i><p>Castles</p></div>
-    <div class="filter"><i class="fa-solid fa-person-swimming"></i><p>Pools</p></div>
-    <div class="filter"><i class="fa-solid fa-campground"></i><p>Camping</p></div>
-    <div class="filter"><i class="fa-solid fa-tractor"></i><p>Farms</p></div>
-    <div class="filter"><i class="fa-solid fa-snowflake"></i><p>Arctic</p></div>
-    <div class="filter"><i class="fa-solid fa-umbrella-beach"></i><p>Beach</p></div>
-    <div class="filter"><i class="fa-solid fa-paw"></i><p>Pet Friendly</p></div>
-    <div class="filter"><i class="fa-solid fa-house-chimney"></i><p>Villas</p></div>
+    <a href="/listings" class="filter"><i class="fa-solid fa-fire"></i><p>All</p></a>
+    <a href="/listings?category=Trending" class="filter"><i class="fa-solid fa-fire"></i><p>Trending</p></a>
+    <a href="/listings?category=Rooms" class="filter"><i class="fa-solid fa-bed"></i><p>Rooms</p></a>
+    <a href="/listings?category=Iconic Cities" class="filter"><i class="fa-solid fa-mountain-city"></i><p>Iconic Cities</p></a>
+    <a href="/listings?category=Mountains" class="filter"><i class="fa-solid fa-mountain"></i><p>Mountains</p></a>
+    <a href="/listings?category=Castles" class="filter"><i class="fa-brands fa-fort-awesome"></i><p>Castles</p></a>
+    <a href="/listings?category=Pools" class="filter"><i class="fa-solid fa-person-swimming"></i><p>Pools</p></a>
+    <a href="/listings?category=Camping" class="filter"><i class="fa-solid fa-campground"></i><p>Camping</p></a>
+    <a href="/listings?category=Farms" class="filter"><i class="fa-solid fa-tractor"></i><p>Farms</p></a>
+    <a href="/listings?category=Arctic" class="filter"><i class="fa-solid fa-snowflake"></i><p>Arctic</p></a>
+    <a href="/listings?category=Beach" class="filter"><i class="fa-solid fa-umbrella-beach"></i><p>Beach</p></a>
+    <a href="/listings?category=Pet Friendly" class="filter"><i class="fa-solid fa-paw"></i><p>Pet Friendly</p></a>
+    <a href="/listings?category=Villas" class="filter"><i class="fa-solid fa-house-chimney"></i><p>Villas</p></a>
+
+    <!-- GST Toggle -->
     <div class="tax-toggle">
       Display total after taxes
       <div class="form-switch">
@@ -60,8 +63,9 @@
   </div>
 </div>
 
-<!-- GST Toggle Script -->
+<!-- Scripts -->
 <script>
+  // GST Toggle
   const gstSwitch = document.getElementById("gstToggle");
 
   function updatePriceDisplay(showGST) {
@@ -92,4 +96,51 @@
     localStorage.setItem("gstSwitch", checked);
     updatePriceDisplay(checked);
   });
+
+  // Highlight Active Filter
+  const urlParams = new URLSearchParams(window.location.search);
+  const activeCategory = urlParams.get("category");
+  if (activeCategory) {
+    document.querySelectorAll("#filters a.filter").forEach(f => {
+      if (f.textContent.trim() === activeCategory) {
+        f.classList.add("active-filter");
+      }
+    });
+  }
 </script>
+
+<style>
+  #filters {
+    display: flex;
+    overflow-x: auto;
+    gap: 1rem;
+    padding: 0.8rem 1rem;
+    border-bottom: 1px solid #ddd;
+  }
+  .filter {
+    text-align: center;
+    text-decoration: none;
+    color: #555;
+    font-size: 0.85rem;
+  }
+  .filter i {
+    font-size: 1.2rem;
+    display: block;
+    margin-bottom: 0.2rem;
+  }
+  .filter:hover {
+    color: #ff385c;
+  }
+  .active-filter {
+    color: #ff385c !important;
+    border-bottom: 2px solid #ff385c;
+  }
+  .tax-toggle {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    font-size: 0.9rem;
+    gap: 0.4rem;
+    white-space: nowrap;
+  }
+</style>

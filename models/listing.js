@@ -14,13 +14,29 @@ const listingSchema = new Schema({
   },
   description: String,
   image: {
-    url:String,
-    filename:String,
-
-    },
+    url: String,
+    filename: String,
+  },
   price: Number,
   location: String,
   country: String,
+
+  // 👇 New category field
+  category: {
+    type: String,
+    enum: [
+      "Trending",
+      "Rooms",
+      "Iconic cities",
+      "Mountains",
+      "Castles",
+      "Pools",
+      "Camping",
+      "Beaches"
+    ],
+    required: true,
+  },
+
   reviews: [
     {
       type: Schema.Types.ObjectId,
@@ -29,10 +45,11 @@ const listingSchema = new Schema({
   ],
   owner: {
     type: Schema.Types.ObjectId,
-    ref:"User",
+    ref: "User",
   },
 });
 
+// Middleware: delete reviews when a listing is deleted
 listingSchema.post("findOneAndDelete", async (listing) => {
   if (listing) {
     await Review.deleteMany({

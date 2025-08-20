@@ -1,18 +1,37 @@
 const Listing = require("../models/listing");
 const mongoose = require("mongoose");
 
-// Show all listings
+// 📃 Show all listings (with search + category filter)
 module.exports.index = async (req, res) => {
-  const allListings = await Listing.find({});
-  res.render("listings/index.ejs", { allListings });
+  const { search, category } = req.query;
+
+  let query = {};
+
+  // 🔍 Search filter
+  if (search) {
+    query.title = { $regex: search, $options: "i" };
+  }
+
+  // 🏷️ Category filter
+  if (category && category !== "all") {
+    query.category = category;
+  }
+
+  const allListings = await Listing.find(query);
+
+  res.render("listings/index.ejs", {
+    allListings,
+    search: search || "",
+    selectedCategory: category || "all",
+  });
 };
 
-// Render new listing form
+// 🆕 Render new listing form
 module.exports.renderNewForm = (req, res) => {
   res.render("listings/new");
 };
 
-// Show specific listing
+// 🔍 Show specific listing
 module.exports.showListing = async (req, res) => {
   const { id } = req.params;
   if (!mongoose.Types.ObjectId.isValid(id)) {
@@ -35,7 +54,7 @@ module.exports.showListing = async (req, res) => {
   res.render("listings/show", { listing });
 };
 
-// Create new listing
+// ➕ Create new listing
 module.exports.createListing = async (req, res) => {
   const newListing = new Listing(req.body.listing);
   newListing.owner = req.user._id;
@@ -52,7 +71,7 @@ module.exports.createListing = async (req, res) => {
   res.redirect(`/listings/${newListing._id}`);
 };
 
-// Render edit form
+// ✏️ Render edit form
 module.exports.editListing = async (req, res) => {
   const { id } = req.params;
   const listing = await Listing.findById(id);
@@ -73,7 +92,7 @@ module.exports.editListing = async (req, res) => {
   res.render("listings/edit", { listing, originalImageUrl });
 };
 
-// Update listing
+// 🔁 Update listing
 module.exports.updateListing = async (req, res) => {
   const { id } = req.params;
   const listing = await Listing.findById(id);
@@ -83,12 +102,13 @@ module.exports.updateListing = async (req, res) => {
     return res.redirect("/listings");
   }
 
-  const { title, description, price, location, country } = req.body.listing;
+  const { title, description, price, location, country, category } = req.body.listing;
   listing.title = title;
   listing.description = description;
   listing.price = price;
   listing.location = location;
   listing.country = country;
+  listing.category = category; // ✅ keep category updated
 
   if (req.file) {
     listing.image = {
@@ -102,10 +122,10 @@ module.exports.updateListing = async (req, res) => {
   res.redirect(`/listings/${listing._id}`);
 };
 
-// Delete listing
+// ❌ Delete listing
 module.exports.destroyListing = async (req, res) => {
   const { id } = req.params;
   await Listing.findByIdAndDelete(id);
   req.flash("success", "Listing deleted");
   res.redirect("/listings");
-};     
+};

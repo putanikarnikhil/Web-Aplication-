@@ -25,9 +25,8 @@ router.route("/login")
   }),userController.login
 );
 
-
 // ✅ Handle logout (POST method)
-router.post(
+router.get(
   "/logout",userController.logout);
 
   
