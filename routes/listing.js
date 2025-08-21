@@ -11,27 +11,67 @@ const initData = require("../init/data.js");
 const Listing = require("../models/listing");
 
 // 🔁 Seed route for initial data (one-time setup)
-router.get("/seed", async (req, res) => {
+// router.get("/", async (req, res) => {
+//   try {
+//     const count = await Listing.countDocuments();
+//     if (count === 0) {
+//       const seeded = initData.data.map((obj) => ({
+//         ...obj,
+//         owner: "686535b772ab689f4ebfa111", // ⚠️ Replace with a valid user ID
+//       }));
+//       await Listing.insertMany(seeded);
+//       res.send("✅ Seed data inserted!");
+//     } else {
+//       res.send("ℹ️ Listings already exist. Skipping seeding.");
+//     }
+//   } catch (err) {
+//     console.error("❌ Error seeding DB:", err);
+//     res.status(500).send("❌ Error occurred during seeding.");
+//   }
+// });
+
+
+// 📃 Index route (search + category handled in controller)
+// router.get("/", wrapAsync(listingController.index));
+
+router.get("/", async (req, res) => {
   try {
-    const count = await Listing.countDocuments();
-    if (count === 0) {
-      const seeded = initData.data.map((obj) => ({
-        ...obj,
-        owner: "686535b772ab689f4ebfa111", // ⚠️ Replace with a valid user ID
-      }));
-      await Listing.insertMany(seeded);
-      res.send("✅ Seed data inserted!");
+    const { category, search } = req.query; // get search from query
+    let listings;
+    console.log(category,"catgory")
+
+    if (category && category !== "All") {
+      listings = await Listing.find({ category });
     } else {
-      res.send("ℹ️ Listings already exist. Skipping seeding.");
+      listings = await Listing.find({}); 
     }
-  } catch (err) {
-    console.error("❌ Error seeding DB:", err);
-    res.status(500).send("❌ Error occurred during seeding.");
+    console.log(listings,"listings this is it");  
+    res.render("listings/index", { listings, search }); // pass search here
+  } catch (e) {
+    console.log(e);
+    res.send("Error loading listings");
   }
 });
 
-// 📃 Index route (search + category handled in controller)
-router.get("/", wrapAsync(listingController.index));
+
+
+// router.get("/", async (req, res) => {
+//   try {
+//     const { category } = req.query;
+//     let listings;
+
+//     if (category && category !== "All") {
+//       listings = await Listing.find({ category: category });
+//     } else {
+//       listings = await Listing.find({});
+//     }
+
+//     res.render("listings/index", { listings });
+//   } catch (err) {
+//     console.error(err);
+//     res.status(500).send("Server Error");
+//   }
+// });
 
 // 🆕 New listing form
 router.get("/new", isLoggedIn, listingController.renderNewForm);
@@ -46,6 +86,7 @@ router.post(
 );
 
 // 🔍 Show listing
+// router.get("/listings/:id", listings.showListing);
 router.get("/:id", wrapAsync(listingController.showListing));
 
 // ✏️ Edit listing form

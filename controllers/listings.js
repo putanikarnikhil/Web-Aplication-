@@ -4,6 +4,7 @@ const mongoose = require("mongoose");
 // 📃 Show all listings (with search + category filter)
 module.exports.index = async (req, res) => {
   const { search, category } = req.query;
+  
 
   let query = {};
 
@@ -25,6 +26,7 @@ module.exports.index = async (req, res) => {
     selectedCategory: category || "all",
   });
 };
+
 
 // 🆕 Render new listing form
 module.exports.renderNewForm = (req, res) => {

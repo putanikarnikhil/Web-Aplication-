@@ -15,14 +15,13 @@ const flash = require("connect-flash");
 const passport = require("passport");
 const LocalStrategy = require("passport-local");
 const User = require("./models/user.js");
-const Listing = require("./models/listing.js");
 const ExpressError = require("./utils/ExpressError.js");
 
 // Routers
 const listingRouter = require("./routes/listing.js");
 const reviewRouter = require("./routes/review.js");
 const userRouter = require("./routes/user.js");
-const bookingRouter = require("./routes/booking.js"); // ✅ Booking Route
+const bookingRouter = require("./routes/booking.js");
 
 // MongoDB Atlas URL from .env
 const dbUrl = process.env.ATLASDB_URL;
@@ -94,20 +93,16 @@ app.use((req, res, next) => {
   next();
 });
 
-// Home Route
-app.get("/", async (req, res, next) => {
-  try {
-    const allListings = await Listing.find({}).sort({ _id: -1 }).limit(6);
-    res.render("home", { allListings });
-  } catch (err) {
-    next(err);
-  }
+// CORRECTED Home Route
+app.get("/", (req, res) => {
+  console.log("--- Executing the CORRECT home route in app.js ---");
+  res.render("home");
 });
 
 // Use Routes
 app.use("/listings", listingRouter);
 app.use("/listings/:id/reviews", reviewRouter);
-app.use("/bookings", bookingRouter); // ✅ Correct
+app.use("/bookings", bookingRouter);
 app.use("/", userRouter);
 
 // Error Handler

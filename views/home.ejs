@@ -1,26 +1,110 @@
-<% layout("layouts/boilerplate") -%>
+<%- layout("layouts/boilerplate") -%>
 
-<h1 class="my-4">Explore New Listings</h1>
+<style>
+  /* Styles for the main hero section */
+  .hero-section {
+    position: relative;
+    padding: 8rem 2rem;
+    background-image: url('https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80');
+    background-size: cover;
+    background-position: center;
+    border-radius: 1rem;
+    color: white;
+    text-align: center;
+    overflow: hidden;
+  }
 
-<div class="row row-cols-lg-4 row-cols-md-2 row-cols-sm-1 g-4">
-  <% for(let listing of allListings) { %>
-    <div class="col">
-      <div class="card h-100 shadow-sm">
-        <a href="/listings/<%= listing._id %>" class="text-decoration-none text-dark">
-          <% if (listing.image && typeof listing.image === 'string') { %>
-            <img src="<%= listing.image %>" class="card-img-top" alt="listing image">
-          <% } else if (listing.image?.url) { %>
-            <img src="<%= listing.image.url %>" class="card-img-top" alt="listing image" style="height: 200px; object-fit: cover;">
-          <% } else { %>
-            <img src="/images/placeholder.jpg" class="card-img-top" alt="no image available">
-          <% } %>
+  .hero-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.4);
+    z-index: 1;
+  }
 
-          <div class="card-body">
-            <h5 class="card-title"><%= listing.title %></h5>
-            <p class="card-text">₹ <%= listing.price?.toLocaleString("en-IN") ?? "N/A" %> /night</p>
-          </div>
-        </a>
+  .hero-content {
+    position: relative;
+    z-index: 2;
+  }
+  
+  .hero-content h1 {
+    text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.7);
+  }
+
+  .hero-content .lead {
+    text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.7);
+  }
+
+  /* Styles for the feature cards */
+  .feature-card {
+    border: none;
+    box-shadow: 0 6px 12px rgba(0,0,0,0.08);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border-radius: 0.75rem;
+  }
+
+  .feature-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.12);
+  }
+
+  .feature-icon {
+    font-size: 2.5rem;
+    color: #fe424d;
+  }
+</style>
+
+<div class="container my-5">
+
+  <div class="hero-section">
+    <div class="hero-content">
+      <h1 class="display-3 fw-bold">Welcome to Wanderlust</h1>
+      <p class="lead mt-3">Your ultimate platform for discovering and booking unique travel experiences around the world.</p>
+      <a href="/listings" class="btn btn-danger btn-lg mt-4">Explore Destinations</a>
+    </div>
+  </div>
+
+  <div class="text-center mt-5 mb-4">
+    <h2 class="fw-light">How It Works</h2>
+    <hr class="w-25 mx-auto">
+  </div>
+
+  <div class="row text-center">
+    
+    <div class="col-lg-3 col-md-6 mb-4">
+      <div class="card feature-card h-100 p-4">
+        <i class="fas fa-search-location feature-icon mb-3"></i>
+        <h5 class="card-title fw-bold">Explore Listings</h5>
+        <p class="card-text text-muted">Discover unique places to stay, from cozy cottages to modern lofts in iconic cities.</p>
       </div>
     </div>
-  <% } %>
+
+    <div class="col-lg-3 col-md-6 mb-4">
+      <div class="card feature-card h-100 p-4">
+        <i class="fas fa-calendar-check feature-icon mb-3"></i>
+        <h5 class="card-title fw-bold">Book with Confidence</h5>
+        <p class="card-text text-muted">Secure your booking easily and manage your travel plans all in one place.</p>
+      </div>
+    </div>
+
+    <div class="col-lg-3 col-md-6 mb-4">
+      <div class="card feature-card h-100 p-4">
+        <i class="fas fa-star feature-icon mb-3"></i>
+        <h5 class="card-title fw-bold">Leave Reviews</h5>
+        <p class="card-text text-muted">Share your experience with the community by leaving ratings and reviews for hosts.</p>
+      </div>
+    </div>
+
+    <div class="col-lg-3 col-md-6 mb-4">
+      <div class="card feature-card h-100 p-4">
+        <i class="fas fa-user-shield feature-icon mb-3"></i>
+        <h5 class="card-title fw-bold">Safe & Secure</h5>
+        <p class="card-text text-muted">We prioritize your safety with secure payments and a trusted user authentication system.</p>
+      </div>
+    </div>
+
+  </div>
 </div>
