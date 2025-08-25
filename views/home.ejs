@@ -1,110 +1,265 @@
 <%- layout("layouts/boilerplate") -%>
 
 <style>
-  /* Styles for the main hero section */
-  .hero-section {
-    position: relative;
-    padding: 8rem 2rem;
-    background-image: url('https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80');
-    background-size: cover;
-    background-position: center;
-    border-radius: 1rem;
-    color: white;
-    text-align: center;
-    overflow: hidden;
+  /* --- Page Setup --- */
+  body {
+    overflow-x: hidden;
+    background-color: #f8f9fa;
   }
 
+  /* --- Animated Background --- */
+  .background-container {
+    position: fixed; top: 0; left: 0;
+    width: 100%; height: 100%;
+    z-index: -1; overflow: hidden;
+    filter: brightness(0.7);
+  }
+
+  @keyframes scroll {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(-50%); }
+  }
+
+  .background-grid {
+    display: flex; flex-wrap: wrap;
+    width: 100%;
+    animation: scroll 180s linear infinite;
+  }
+
+  .grid-card {
+    flex: 1 0 20%; box-sizing: border-box; padding: 10px;
+  }
+
+  .grid-card img {
+    width: 100%; height: 250px; object-fit: cover;
+    border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    transition: all 0.5s ease;
+  }
+
+  /* --- Hero Section --- */
+  .hero-section {
+    position: relative; color: white;
+    min-height: 100vh;
+    display: flex; align-items: center; justify-content: center;
+    text-align: center;
+  }
+  
   .hero-section::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.4);
-    z-index: 1;
+    content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0, 0, 0, 0.4); z-index: 1;
   }
 
   .hero-content {
-    position: relative;
-    z-index: 2;
+    position: relative; z-index: 2; padding: 2rem;
   }
-  
+
   .hero-content h1 {
-    text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.7);
+    font-size: 5rem; font-weight: 700;
+    text-shadow: 0 4px 15px rgba(0,0,0,0.6);
   }
 
   .hero-content .lead {
-    text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.7);
+    font-size: 1.5rem; max-width: 700px;
+    margin: 1.5rem auto 2.5rem auto;
+    text-shadow: 0 2px 10px rgba(0,0,0,0.5);
   }
 
-  /* Styles for the feature cards */
-  .feature-card {
-    border: none;
-    box-shadow: 0 6px 12px rgba(0,0,0,0.08);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    border-radius: 0.75rem;
+  /* --- General Content Section Styling --- */
+  .content-section {
+    background-color: #ffffff; padding: 6rem 0;
+    position: relative; z-index: 5;
   }
 
-  .feature-card:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 10px 20px rgba(0,0,0,0.12);
+  .section-heading {
+    margin-bottom: 4rem;
   }
 
-  .feature-icon {
-    font-size: 2.5rem;
-    color: #fe424d;
+  .section-heading h2 {
+    font-size: 3rem; font-weight: 300;
+  }
+
+  .section-heading p {
+      max-width: 700px; margin: 1rem auto 0 auto;
+      font-size: 1.1rem; color: #6c757d;
+  }
+  
+  /* --- Travel Styles Section --- */
+  .style-card {
+      position: relative; border-radius: 15px; overflow: hidden;
+      color: white; min-height: 400px;
+      display: flex; align-items: flex-end; padding: 2rem;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+      transition: transform 0.4s ease;
+  }
+  .style-card:hover {
+      transform: scale(1.05);
+  }
+  .style-card::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+      background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 60%);
+  }
+  .style-card-content {
+      position: relative; z-index: 2;
+  }
+  .style-card h3 {
+      font-weight: 700;
+  }
+
+  /* --- Featured Listings --- */
+  .featured-card {
+      border: none; border-radius: 15px; overflow: hidden;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  .featured-card:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+  }
+  .featured-card img {
+      height: 250px; object-fit: cover;
+  }
+
+  /* --- Why Wanderlust Section --- */
+   #why-us-section {
+      background-color: #f8f9fa;
+  }
+  .benefit-item {
+      text-align: center;
+  }
+  .benefit-icon {
+      font-size: 3rem; color: #fe424d; margin-bottom: 1rem;
+      transition: transform 0.3s ease;
+  }
+  .benefit-item:hover .benefit-icon {
+      transform: scale(1.2);
+  }
+
+  /* --- Testimonials Section --- */
+  #testimonials {
+    background: #212529; color: white;
+  }
+  #testimonials .section-heading h2 {
+      color: white;
+  }
+  .testimonial-card {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border-radius: 15px; padding: 2rem;
+      text-align: center; border: 1px solid rgba(255,255,255,0.2);
+  }
+  .testimonial-icon {
+      font-size: 3rem; margin-bottom: 1rem;
+  }
+  
+  /* --- Final CTA Section --- */
+  #cta-section {
+    background: linear-gradient(135deg, #fe424d, #ff6b6b); color: white;
   }
 </style>
 
-<div class="container my-5">
-
-  <div class="hero-section">
-    <div class="hero-content">
-      <h1 class="display-3 fw-bold">Welcome to Wanderlust</h1>
-      <p class="lead mt-3">Your ultimate platform for discovering and booking unique travel experiences around the world.</p>
-      <a href="/listings" class="btn btn-danger btn-lg mt-4">Explore Destinations</a>
-    </div>
+<div class="background-container">
+  <div class="background-grid">
+    <% const images = ["https://images.unsplash.com/photo-1552733407-5d5c46c3bb3b?w=400", "https://images.unsplash.com/photo-1501785888041-af3ef285b470?w=400", "https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=400", "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=400", "https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=400", "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=400", "https://images.unsplash.com/photo-1622396481328-9b1b78cdd9fd?w=400", "https://images.unsplash.com/photo-1502784444187-359ac186c5bb?w=400", "https://images.unsplash.com/photo-1493246507139-91e8fad9978e?w=400", "https://images.unsplash.com/photo-1618140052121-39fc6db33972?w=400", "https://images.unsplash.com/photo-1533619239233-6280475a633a?w=400", "https://images.unsplash.com/photo-1602391833977-358a52198938?w=400", "https://images.unsplash.com/photo-1499793983690-e29da59ef1c2?w=400", "https://images.unsplash.com/photo-1480796927426-f609979314bd?w=400", "https://images.unsplash.com/photo-1439066615861-d1af74d74000?w=400"]; %>
+    <% for(let i = 0; i < 4; i++) { %>
+      <% images.forEach(src => { %>
+        <div class="grid-card"><img src="<%= src %>" alt="Travel Destination Backdrop"></div>
+      <% }) %>
+    <% } %>
   </div>
+</div>
 
-  <div class="text-center mt-5 mb-4">
-    <h2 class="fw-light">How It Works</h2>
-    <hr class="w-25 mx-auto">
+<div class="hero-section">
+  <div class="hero-content">
+    <h1 class="display-3 fw-bold">Wanderlust</h1>
+    <p class="lead">A strong desire to travel and explore the world.</p>
+    <a href="/listings" class="btn btn-danger btn-lg mt-4 px-5 py-3">Begin Your Journey</a>
   </div>
+</div>
 
-  <div class="row text-center">
-    
-    <div class="col-lg-3 col-md-6 mb-4">
-      <div class="card feature-card h-100 p-4">
-        <i class="fas fa-search-location feature-icon mb-3"></i>
-        <h5 class="card-title fw-bold">Explore Listings</h5>
-        <p class="card-text text-muted">Discover unique places to stay, from cozy cottages to modern lofts in iconic cities.</p>
-      </div>
+<div class="content-section">
+    <div class="container">
+        <div class="text-center section-heading">
+            <h2 class="fw-light">Find Your Perfect Escape</h2>
+            <p>Whether you seek thrilling adventures, serene relaxation, or cultural immersion, your next great story starts here.</p>
+        </div>
+        <div class="row">
+            <div class="col-lg-4 mb-4">
+                <a href="/listings?category=Mountains" class="style-card" style="background-image: url('https://images.unsplash.com/photo-1519681393784-d120267933ba?w=800'); background-size: cover; background-position: center;">
+                    <div class="style-card-content"><h3>Adventure</h3><p>Hike, climb, and explore the world's most breathtaking peaks.</p></div>
+                </a>
+            </div>
+            <div class="col-lg-4 mb-4">
+                <a href="/listings?category=Beaches" class="style-card" style="background-image: url('https://images.unsplash.com/photo-1473496169904-658ba7c44d8a?w=800'); background-size: cover; background-position: center;">
+                    <div class="style-card-content"><h3>Relaxation</h3><p>Unwind on pristine beaches and let the ocean waves wash your worries away.</p></div>
+                </a>
+            </div>
+             <div class="col-lg-4 mb-4">
+                <a href="/listings?category=Iconic cities" class="style-card" style="background-image: url('https://images.unsplash.com/photo-1533929736458-ca588d08c8be?w=800'); background-size: cover; background-position: center;">
+                     <div class="style-card-content"><h3>Culture</h3><p>Discover the history, art, and flavors of the world's most vibrant cities.</p></div>
+                </a>
+            </div>
+        </div>
     </div>
+</div>
 
-    <div class="col-lg-3 col-md-6 mb-4">
-      <div class="card feature-card h-100 p-4">
-        <i class="fas fa-calendar-check feature-icon mb-3"></i>
-        <h5 class="card-title fw-bold">Book with Confidence</h5>
-        <p class="card-text text-muted">Secure your booking easily and manage your travel plans all in one place.</p>
-      </div>
+<div class="content-section" style="background-color: #f8f9fa;">
+    <div class="container">
+        <div class="text-center section-heading"><h2 class="fw-light">Featured Destinations</h2></div>
+        <div class="row">
+            <% if (typeof featuredListings !== 'undefined' && featuredListings.length > 0) { %>
+                <% featuredListings.forEach(listing => { %>
+                    <div class="col-lg-4 col-md-6 mb-4">
+                        <a href="/listings/<%= listing._id %>" style="text-decoration: none; color: inherit;">
+                            <div class="card featured-card h-100">
+                                <% if (listing.image && listing.image.url) { %><img src="<%= listing.image.url.replace('/upload', '/upload/c_fill,h_400,w_600') %>" class="card-img-top" alt="<%= listing.title %>"><% } %>
+                                <div class="card-body"><h5 class="card-title"><%= listing.title %></h5><p class="card-text text-muted"><%= listing.location %>, <%= listing.country %></p></div>
+                            </div>
+                        </a>
+                    </div>
+                <% }) %>
+            <% } else { %>
+                <p class="text-center text-muted">No featured destinations to show right now.</p>
+            <% } %>
+        </div>
     </div>
+</div>
 
-    <div class="col-lg-3 col-md-6 mb-4">
-      <div class="card feature-card h-100 p-4">
-        <i class="fas fa-star feature-icon mb-3"></i>
-        <h5 class="card-title fw-bold">Leave Reviews</h5>
-        <p class="card-text text-muted">Share your experience with the community by leaving ratings and reviews for hosts.</p>
-      </div>
+<div class="content-section" id="why-us-section">
+    <div class="container">
+        <div class="text-center section-heading"><h2 class="fw-light">Why Choose Wanderlust?</h2><hr class="w-25 mx-auto"></div>
+        <div class="row">
+            <div class="col-lg-3 col-md-6 mb-4 benefit-item"><i class="fas fa-globe-americas benefit-icon"></i><h5 class="fw-bold">Global Listings</h5><p class="text-muted">From remote cabins to city lofts, find the perfect stay anywhere in the world.</p></div>
+            <div class="col-lg-3 col-md-6 mb-4 benefit-item"><i class="fas fa-check-circle benefit-icon"></i><h5 class="fw-bold">Verified Stays</h5><p class="text-muted">Every listing is vetted for quality and safety, so you can book with confidence.</p></div>
+            <div class="col-lg-3 col-md-6 mb-4 benefit-item"><i class="fas fa-headset benefit-icon"></i><h5 class="fw-bold">24/7 Support</h5><p class="text-muted">Our dedicated support team is always here to help you, day or night.</p></div>
+            <div class="col-lg-3 col-md-6 mb-4 benefit-item"><i class="fas fa-wallet benefit-icon"></i><h5 class="fw-bold">Secure Payments</h5><p class="text-muted">Your payments are encrypted and secure, protecting you from fraud.</p></div>
+        </div>
     </div>
+</div>
 
-    <div class="col-lg-3 col-md-6 mb-4">
-      <div class="card feature-card h-100 p-4">
-        <i class="fas fa-user-shield feature-icon mb-3"></i>
-        <h5 class="card-title fw-bold">Safe & Secure</h5>
-        <p class="card-text text-muted">We prioritize your safety with secure payments and a trusted user authentication system.</p>
-      </div>
+<div class="content-section" id="testimonials">
+    <div class="container">
+        <div class="text-center section-heading"><h2 class="fw-light">Stories from Our Community</h2></div>
+        <div class="row">
+            <div class="col-lg-8 mx-auto">
+                <div id="testimonialCarousel" class="carousel slide" data-bs-ride="carousel">
+                    <div class="carousel-inner">
+                        <div class="carousel-item active">
+                            <div class="testimonial-card"><i class="fas fa-user-circle testimonial-icon"></i><p class="testimonial-text h4">"Wanderlust made finding our dream vacation rental a breeze! The entire process was seamless, and the stay was unforgettable. Highly recommend!"</p><p class="testimonial-author mt-3">- Sarah L.</p></div>
+                        </div>
+                        <div class="carousel-item">
+                            <div class="testimonial-card"><i class="fas fa-user-circle testimonial-icon"></i><p class="testimonial-text h4">"I've used many booking sites, but the quality of listings on Wanderlust is unmatched. A fantastic platform for any serious traveler."</p><p class="testimonial-author mt-3">- Michael B.</p></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
+</div>
 
-  </div>
+<div class="content-section text-center" id="cta-section">
+    <div class="container">
+        <h2 class="display-5 fw-bold">Your Next Adventure Awaits</h2>
+        <p class="lead my-4">Don't just dream about it. Discover, book, and live your next great story with Wanderlust.</p>
+        <a href="/listings" class="btn btn-light btn-lg px-5 py-3">Start Exploring Now</a>
+    </div>
 </div>

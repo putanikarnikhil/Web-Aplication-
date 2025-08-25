@@ -1,0 +1,296 @@
+<%- layout("layouts/boilerplate") -%>
+
+<link
+  rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+/>
+
+<% if (typeof search !== 'undefined' && search) { %>
+<div class="container mt-4">
+  <p class="text-muted">Showing results for "<%= search %>"</p>
+</div>
+<% } %>
+
+<div id="filters-wrapper" class="position-relative">
+  <div id="filters">
+    <a href="/listings" class="filter"
+      ><i class="fa-solid fa-fire"></i>
+      <p>All</p></a
+    >
+    <a href="/listings?category=Trending" class="filter"
+      ><i class="fa-solid fa-fire"></i>
+      <p>Trending</p></a
+    >
+    <a href="/listings?category=Rooms" class="filter"
+      ><i class="fa-solid fa-bed"></i>
+      <p>Rooms</p></a
+    >
+    <a href="/listings?category=Iconic cities" class="filter"
+      ><i class="fa-solid fa-mountain-city"></i>
+      <p>Iconic cities</p></a
+    >
+    <a href="/listings?category=Mountains" class="filter"
+      ><i class="fa-solid fa-mountain"></i>
+      <p>Mountains</p></a
+    >
+    <a href="/listings?category=Castles" class="filter"
+      ><i class="fa-brands fa-fort-awesome"></i>
+      <p>Castles</p></a
+    >
+    <a href="/listings?category=Pools" class="filter"
+      ><i class="fa-solid fa-person-swimming"></i>
+      <p>Pools</p></a
+    >
+    <a href="/listings?category=Camping" class="filter"
+      ><i class="fa-solid fa-campground"></i>
+      <p>Camping</p></a
+    >
+    <a href="/listings?category=Farms" class="filter"
+      ><i class="fa-solid fa-tractor"></i>
+      <p>Farms</p></a
+    >
+    <a href="/listings?category=Arctic" class="filter"
+      ><i class="fa-solid fa-snowflake"></i>
+      <p>Arctic</p></a
+    >
+    <a href="/listings?category=Beaches" class="filter"
+      ><i class="fa-solid fa-umbrella-beach"></i>
+      <p>Beaches</p></a
+    >
+    <a href="/listings?category=Pet Friendly" class="filter"
+      ><i class="fa-solid fa-paw"></i>
+      <p>Pet Friendly</p></a
+    >
+    <a href="/listings?category=Villas" class="filter"
+      ><i class="fa-solid fa-house-chimney"></i>
+      <p>Villas</p></a
+    >
+
+    <div class="tax-toggle">
+      Display total after taxes
+      <div class="form-switch">
+        <input
+          class="form-check-input"
+          type="checkbox"
+          role="switch"
+          id="gstToggle"
+        />
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="container mt-4">
+  <% if (typeof listings !== 'undefined' && listings.length > 0) { %> <% if
+  (typeof activeCategory !== 'undefined' && activeCategory) { %>
+  <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 gx-4 gy-4">
+    <% for (const listing of listings) { %>
+    <div class="col">
+      <div class="card shadow-sm h-100">
+        <a href="/listings/<%= listing._id %>" class="listing-link">
+          <img
+            src="<%= listing.image.url %>"
+            class="card-img-top"
+            alt="<%= listing.title %>"
+            style="height: 200px; object-fit: cover"
+          />
+          <div class="card-body">
+            <p class="card-text mb-1"><strong><%= listing.title %></strong></p>
+            <p class="mb-0 price-text" data-price="<%= listing.price %>">
+              ₹ <%= listing.price.toLocaleString("en-IN") %> /night
+              <span class="tax-info" style="display: none">&nbsp;+18% GST</span>
+            </p>
+          </div>
+        </a>
+      </div>
+    </div>
+    <% } %>
+  </div>
+
+  <% } else { %> <% const categorizedListings = {}; for (const listing of
+  listings) { if (listing.category) { if
+  (!categorizedListings[listing.category]) {
+  categorizedListings[listing.category] = []; }
+  categorizedListings[listing.category].push(listing); } } const
+  categoriesToDisplay = Object.keys(categorizedListings); %> <% for (const
+  category of categoriesToDisplay) { %>
+
+  <div
+    class="category-header <%= (category === 'Beaches') ? 'beaches-header' : '' %>"
+  >
+    <h2><%= category %></h2>
+  </div>
+  
+
+  <div
+    class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 gx-4 gy-4"
+  >
+    <% for (const listing of categorizedListings[category]) { %>
+    <div class="col">
+      <div class="card shadow-sm h-100">
+        <a href="/listings/<%= listing._id %>" class="listing-link">
+          <img
+            src="<%= listing.image.url %>"
+            class="card-img-top"
+            alt="<%= listing.title %>"
+            style="height: 200px; object-fit: cover"
+          />
+          <div class="card-body">
+            <p class="card-text mb-1"><strong><%= listing.title %></strong></p>
+            <p class="mb-0 price-text" data-price="<%= listing.price %>">
+              ₹ <%= listing.price.toLocaleString("en-IN") %> /night
+              <span class="tax-info" style="display: none">&nbsp;+18% GST</span>
+            </p>
+          </div>
+        </a>
+      </div>
+    </div>
+    <% } %>
+  </div>
+  <% } %> <% } %> <% } else { %>
+  <div class="text-center mt-5">
+    <h4>No listings found.</h4>
+    <p class="text-muted">Please check your filters or try again later.</p>
+  </div>
+  <% } %>
+</div>
+
+<script>
+  const gstSwitch = document.getElementById("gstToggle");
+
+  function updatePriceDisplay(showGST) {
+    document.querySelectorAll(".price-text").forEach((p) => {
+      const basePrice = parseFloat(p.dataset.price);
+      const taxInfo = p.querySelector(".tax-info");
+      if (showGST) {
+        const totalPrice = Math.round(basePrice * 1.18);
+        p.firstChild.textContent = `₹ ${totalPrice.toLocaleString(
+          "en-IN"
+        )} /night`;
+        taxInfo.style.display = "inline";
+      } else {
+        p.firstChild.textContent = `₹ ${basePrice.toLocaleString(
+          "en-IN"
+        )} /night`;
+        taxInfo.style.display = "none";
+      }
+    });
+  }
+
+  document.addEventListener("DOMContentLoaded", () => {
+    const isGstChecked = localStorage.getItem("gstSwitch") === "true";
+    gstSwitch.checked = isGstChecked;
+    updatePriceDisplay(isGstChecked);
+
+    const params = new URLSearchParams(window.location.search);
+    const activeCategory = params.get("category");
+    if (activeCategory) {
+      document.querySelectorAll("#filters a.filter").forEach((link) => {
+        if (link.href.includes(`category=${activeCategory}`)) {
+          link.classList.add("active-filter");
+        }
+      });
+    } else if (window.location.pathname === "/listings" && !activeCategory) {
+      document
+        .querySelector("#filters a.filter[href='/listings']")
+        .classList.add("active-filter");
+    }
+  });
+
+  gstSwitch.addEventListener("change", (e) => {
+    localStorage.setItem("gstSwitch", e.target.checked);
+    updatePriceDisplay(e.target.checked);
+  });
+</script>
+
+<style>
+  body {
+    background-color: #f8f9fa;
+  }
+
+  #filters {
+    display: flex;
+    overflow-x: auto;
+    gap: 1.25rem; /* Increased gap for better spacing */
+    padding: 1rem 1.5rem; /* Increased padding */
+    border-bottom: 1px solid #ddd;
+    align-items: center;
+  }
+
+  /* NEW: Updated .filter style to make all links boxed */
+  .filter {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.6rem 1rem;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    background-color: #ffffff;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+
+    text-align: center;
+    text-decoration: none;
+    color: #555;
+    font-size: 0.8rem;
+    font-weight: 500;
+    white-space: nowrap;
+    transition: all 0.2s ease-in-out;
+  }
+  .filter p {
+    margin-bottom: 0;
+  }
+  .filter i {
+    font-size: 1.2rem;
+  }
+  .filter:hover {
+    color: #000;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  /* NEW: Updated active state for the boxed links */
+  .active-filter {
+    color: #ff385c !important;
+    border-color: #222;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  .category-header {
+    display: inline-block;
+    padding: 0.75rem 1.5rem;
+    background-image: linear-gradient(120deg, #fdfbfb 0%, #ebedee 100%);
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.07);
+    margin-top: 2.5rem;
+    margin-bottom: 1.5rem;
+    border: 1px solid #eee;
+  }
+  .category-header h2 {
+    font-size: 1.75rem;
+    font-weight: 600;
+    color: #333;
+    margin: 0;
+  }
+
+  .beaches-header {
+    background-image: linear-gradient(120deg, #dcdddd 0%, #d7e4ea 100%);
+    border-color: #a1c4fd;
+  }
+  .beaches-header h2 {
+    color: #000000;
+  }
+
+  .tax-toggle {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    font-size: 0.9rem;
+    gap: 0.4rem;
+    white-space: nowrap;
+  }
+  .listing-link {
+    text-decoration: none;
+    color: inherit;
+  }
+</style>

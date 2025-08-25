@@ -2,11 +2,6 @@ const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 const Review = require("./review.js");
 
-const imageSchema = new Schema({
-  url: String,
-  filename: String,
-}, { _id: false });
-
 const listingSchema = new Schema({
   title: {
     type: String,
@@ -21,7 +16,7 @@ const listingSchema = new Schema({
   location: String,
   country: String,
 
-  // 👇 New category field
+  // Corrected category field with all possible values
   category: {
     type: String,
     enum: [
@@ -32,7 +27,11 @@ const listingSchema = new Schema({
       "Castles",
       "Pools",
       "Camping",
-      "Beaches"
+      "Beaches",
+      "Farms",
+      "Arctic",
+      "Pet Friendly",
+      "Villas"
     ],
     required: true,
   },

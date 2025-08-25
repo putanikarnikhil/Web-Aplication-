@@ -1,4 +1,5 @@
-require("dotenv").config({ path: "../.env" });
+// Correctly load environment variables from the root directory
+require('dotenv').config({ path: require('path').resolve(__dirname, '../.env') });
 
 const mongoose = require("mongoose");
 const initData = require("./data.js");
@@ -18,9 +19,9 @@ async function main() {
     console.log("🧹 Deleted existing listings");
 
     // 2. Add owner to each listing
-    const listingsWithOwner = initData.map((obj) => ({
+    const listingsWithOwner = initData.data.map((obj) => ({
       ...obj,
-      owner: "686535b772ab689f4ebfa111", // ✅ ensure this _id exists
+      owner: "686535b772ab689f4ebfa111", // ✅ ensure this _id exists in your users collection
     }));
 
     // 3. Insert new listings

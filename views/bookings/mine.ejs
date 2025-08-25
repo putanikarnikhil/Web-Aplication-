@@ -8,21 +8,40 @@
   <% } else { %>
     <div class="row row-cols-1 row-cols-md-2 g-4">
       <% bookings.forEach(b => { %>
+
+        <%# %>
+        <% if (b.listing) { %> 
+        <%# %>
+
         <div class="col">
           <div class="card h-100 shadow-sm border-0">
-            <img src="<%= b.listing.image.url %>" class="card-img-top" alt="..." style="height: 220px; object-fit: cover;">
+
+            <%# %>
+            <% if (b.listing.image && b.listing.image.url) { %>
+              <img src="<%= b.listing.image.url %>" class="card-img-top" alt="..." style="height: 220px; object-fit: cover;">
+            <% } else { %>
+              <img src="https://via.placeholder.com/300x220?text=Image+Not+Available" class="card-img-top" alt="Image not available" style="height: 220px; object-fit: cover;">
+            <% } %>
+
             <div class="card-body">
               <h5 class="card-title text-danger"><%= b.listing.title %></h5>
               <p class="card-text">
                 <i class="fa-regular fa-calendar-days"></i>
                 <strong>Check-in:</strong> <%= b.checkIn.toDateString() %><br>
                 <strong>Check-out:</strong> <%= b.checkOut.toDateString() %><br>
-                <strong>Guests:</strong> <%= b.guests %>
+                <% if (b.guests) { %>
+                  <strong>Guests:</strong> <%= b.guests %>
+                <% } %>
               </p>
               <a href="/listings/<%= b.listing._id %>" class="btn btn-outline-primary btn-sm mt-2">View Listing</a>
             </div>
           </div>
         </div>
+
+        <%# %>
+        <% } %> 
+        <%# %>
+
       <% }) %>
     </div>
   <% } %>

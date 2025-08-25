@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wanderlust - 3D Animated</title>
+
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+
+    <style>
+        /* --- General Body Styling --- */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #000000;
+            color: #EAEAEA;
+            overflow-x: hidden;
+        }
+
+        /* --- Navbar Styling --- */
+        .navbar-ai-sleek {
+            background-color: rgba(12, 13, 12, 0.7) !important;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(220, 53, 69, 0.3);
+            box-shadow: none;
+        }
+
+        .navbar-ai-sleek .navbar-brand {
+            color: #f5f3f3 !important; font-weight: 700; transition: color 0.3s ease;
+        }
+
+        .navbar-ai-sleek a.text-decoration-none, .navbar-ai-sleek .nav-link {
+            color: #EAEAEA !important; font-weight: 500; transition: color 0.3s ease;
+        }
+
+        .navbar-ai-sleek a.text-decoration-none:hover,
+        .navbar-ai-sleek .navbar-brand:hover,
+        .navbar-ai-sleek .nav-link:hover {
+            color: #DC3545 !important;
+        }
+        
+        /* --- 3D Hero Section --- */
+        .hero-container-3d {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        #threejs-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        .hero-text {
+            position: relative;
+            z-index: 10;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            background: radial-gradient(circle, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0) 70%);
+        }
+
+        /* --- Apple-style H1 --- */
+        .apple-h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(3rem, 10vw, 6rem);
+            color: #FFFFFF;
+            font-weight: 700;
+            letter-spacing: 2px;
+            position: relative;
+            display: inline-block;
+            overflow: hidden;
+        }
+        
+        .apple-h1 span {
+            display: inline-block;
+            opacity: 0;
+            transform: translateY(40px) scale(0.8);
+            animation: letter-reveal 0.6s forwards cubic-bezier(0.165, 0.84, 0.44, 1);
+        }
+
+        .apple-h1 span:nth-child(1) { animation-delay: 0.2s; }
+        .apple-h1 span:nth-child(2) { animation-delay: 0.25s; }
+        .apple-h1 span:nth-child(3) { animation-delay: 0.3s; }
+        .apple-h1 span:nth-child(4) { animation-delay: 0.35s; }
+        .apple-h1 span:nth-child(5) { animation-delay: 0.4s; }
+        .apple-h1 span:nth-child(6) { animation-delay: 0.45s; }
+        .apple-h1 span:nth-child(7) { animation-delay: 0.5s; }
+        .apple-h1 span:nth-child(8) { animation-delay: 0.55s; }
+        .apple-h1 span:nth-child(9) { animation-delay: 0.6s; }
+        .apple-h1 span:nth-child(10) { animation-delay: 0.65s; }
+
+        .apple-h1::after {
+            content: '';
+            position: absolute;
+            top: -10%;
+            left: -150%;
+            width: 70%;
+            height: 120%;
+            background: linear-gradient(100deg, rgba(255, 255, 255, 0) 10%, rgba(255, 255, 255, 0.8) 50%, rgba(255, 255, 255, 0) 90%);
+            transform: skewX(-20deg);
+            animation: shine 2s forwards cubic-bezier(0.165, 0.84, 0.44, 1);
+            animation-delay: 1.0s;
+        }
+        
+        .hero-text .lead {
+            font-size: 1.25rem; max-width: 500px; margin: 1rem auto 2rem auto;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+            opacity: 0;
+            animation: fade-in 1s forwards;
+            animation-delay: 1.5s;
+        }
+        
+        .hero-text .btn {
+             opacity: 0;
+            animation: fade-in 1s forwards;
+            animation-delay: 1.8s;
+        }
+
+        /* --- General Content Section Styling --- */
+        .content-section {
+            padding: 100px 0;
+            position: relative;
+            z-index: 5;
+        }
+        .section-heading {
+            margin-bottom: 4rem; text-align: center;
+        }
+        .section-heading h2 {
+            font-size: 3rem; font-weight: 300; color: #fff;
+        }
+        .section-heading p {
+            max-width: 700px; margin: 1rem auto 0 auto;
+            font-size: 1.1rem; color: #8B949E;
+        }
+        
+        /* --- Travel Styles Section --- */
+        .style-card {
+            position: relative; border-radius: 15px; overflow: hidden;
+            color: white; min-height: 400px;
+            display: flex; align-items: flex-end; padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            transition: transform 0.4s ease;
+            text-decoration: none;
+        }
+        .style-card:hover {
+            transform: scale(1.05);
+        }
+        .style-card::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0) 60%);
+        }
+        .style-card-content {
+            position: relative; z-index: 2;
+        }
+        .style-card h3 {
+            font-weight: 700;
+        }
+
+        /* --- Featured Listings --- */
+        .featured-card {
+            background-color: #0D1117;
+            border: 1px solid #30363D;
+            border-radius: 15px; overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            text-decoration: none; color: inherit;
+        }
+        .featured-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(220, 53, 69, 0.2);
+        }
+        .featured-card img {
+            height: 250px; object-fit: cover;
+        }
+
+        /* --- Why Wanderlust Section --- */
+        #why-us-section {
+            background-color: #0D1117;
+        }
+        #globe-container {
+            height: 400px;
+            cursor: grab;
+        }
+        .benefit-item { text-align: center; }
+        .benefit-icon {
+            font-size: 3rem; color: #DC3545; margin-bottom: 1rem;
+            transition: transform 0.3s ease;
+        }
+        .benefit-item:hover .benefit-icon { transform: scale(1.2); }
+
+        /* --- Testimonials Section --- */
+        .testimonial-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 15px; padding: 2rem;
+            text-align: center; border: 1px solid rgba(255,255,255,0.1);
+        }
+        .testimonial-icon { font-size: 3rem; margin-bottom: 1rem; }
+        
+        /* --- Final CTA Section --- */
+        #cta-section {
+            background: linear-gradient(135deg, #DC3545, #c82333); color: white;
+        }
+
+        /* --- Keyframe Animations --- */
+        @keyframes letter-reveal {
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        @keyframes shine {
+            to { left: 150%; }
+        }
+        
+        @keyframes fade-in {
+            to { opacity: 1; }
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark py-3 sticky-top navbar-ai-sleek" style="z-index: 1030;">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center gap-2" href="/">
+                <i class="fas fa-compass"></i> Explore
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarContent">
+                <ul class="navbar-nav mx-auto mb-2 mb-lg-0">
+                    <li class="nav-item"><a class="nav-link" href="#destinations">Destinations</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#why-us-section">Why Us</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#testimonials">Community</a></li>
+                </ul>
+                <div class="d-flex align-items-center gap-3">
+                    <a href="/signup" class="text-decoration-none">Sign up</a>
+                    <a href="/login" class="btn btn-danger rounded-pill px-4">Log in</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 3D Animated Hero Section -->
+    <header class="hero-container-3d">
+        <canvas id="threejs-canvas"></canvas>
+        <div class="hero-text">
+            <h1 class="apple-h1">
+                <span>W</span><span>a</span><span>n</span><span>d</span><span>e</span><span>r</span><span>l</span><span>u</span><span>s</span><span>t</span>
+            </h1>
+            <p class="lead">A strong desire to travel and explore the world.</p>
+            <a href="/listings" class="btn btn-danger btn-lg mt-4 px-5 py-3 rounded-pill">Begin Your Journey</a>
+        </div>
+    </header>
+
+    <main>
+        <!-- Travel Styles Section -->
+        <section class="content-section" id="destinations">
+            <div class="container">
+                <div class="section-heading">
+                    <h2>Find Your Perfect Escape</h2>
+                    <p>Whether you seek thrilling adventures, serene relaxation, or cultural immersion, your next great story starts here.</p>
+                </div>
+                <div class="row">
+                    <div class="col-lg-4 mb-4">
+                        <a href="/listings?category=Mountains" class="style-card" style="background-image: url('https://images.unsplash.com/photo-1551632811-561732d1e306?w=800&auto=format&fit=crop'); background-size: cover; background-position: center;">
+                            <div class="style-card-content"><h3>Adventure</h3><p>Hike, climb, and explore the world's most breathtaking peaks.</p></div>
+                        </a>
+                    </div>
+                    <div class="col-lg-4 mb-4">
+                        <a href="/listings?category=Beaches" class="style-card" style="background-image: url('https://images.unsplash.com/photo-1499750310107-5fef28a66643?w=800&auto=format&fit=crop'); background-size: cover; background-position: center;">
+                            <div class="style-card-content"><h3>Relaxation</h3><p>Unwind on pristine beaches and let the ocean waves wash your worries away.</p></div>
+                        </a>
+                    </div>
+                     <div class="col-lg-4 mb-4">
+                        <a href="/listings?category=Iconic cities" class="style-card" style="background-image: url('https://images.unsplash.com/photo-1471479917193-f00955256257?w=800&auto=format&fit=crop'); background-size: cover; background-position: center;">
+                             <div class="style-card-content"><h3>Culture</h3><p>Discover the history, art, and flavors of the world's most vibrant cities.</p></div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Featured Listings Section -->
+        <section class="content-section" style="background-color: #000;">
+            <div class="container">
+                <div class="section-heading"><h2>Featured Destinations</h2></div>
+                <div class="row">
+                    <!-- Static Fallback Content -->
+                    <div class="col-lg-4 col-md-6 mb-4">
+                        <a href="#" class="featured-card d-block">
+                            <img src="https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=600&auto=format&fit=crop" class="card-img-top" alt="Featured Villa">
+                            <div class="card-body p-3">
+                                <h5 class="card-title mb-1">Serene Villa</h5>
+                                <p class="card-text text-muted">Bali, Indonesia</p>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="col-lg-4 col-md-6 mb-4">
+                        <a href="#" class="featured-card d-block">
+                            <img src="https://images.unsplash.com/photo-1559742811-822ca451b6a1?w=600&auto=format&fit=crop" class="card-img-top" alt="Featured Chalet">
+                            <div class="card-body p-3">
+                                <h5 class="card-title mb-1">Mountain Chalet</h5>
+                                <p class="card-text text-muted">Aspen, USA</p>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="col-lg-4 col-md-6 mb-4">
+                        <a href="#" class="featured-card d-block">
+                            <img src="https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=600&auto=format&fit=crop" class="card-img-top" alt="Featured Loft">
+                            <div class="card-body p-3">
+                                <h5 class="card-title mb-1">Urban Loft</h5>
+                                <p class="card-text text-muted">Tokyo, Japan</p>
+                            </div>
+                        </a>
+                    </div>
+                     <div class="col-lg-4 col-md-6 mb-4">
+                        <a href="#" class="featured-card d-block">
+                            <img src="https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=600&auto=format&fit=crop" class="card-img-top" alt="Featured Apartment">
+                            <div class="card-body p-3">
+                                <h5 class="card-title mb-1">Chic Apartment</h5>
+                                <p class="card-text text-muted">Paris, France</p>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="col-lg-4 col-md-6 mb-4">
+                        <a href="#" class="featured-card d-block">
+                            <img src="https://images.unsplash.com/photo-1504703395950-b89145a5425b?w=600&auto=format&fit=crop" class="card-img-top" alt="Featured Cabin">
+                            <div class="card-body p-3">
+                                <h5 class="card-title mb-1">Forest Cabin</h5>
+                                <p class="card-text text-muted">British Columbia, Canada</p>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="col-lg-4 col-md-6 mb-4">
+                        <a href="#" class="featured-card d-block">
+                            <img src="https://images.unsplash.com/photo-1570129477492-45c003edd2e7?w=600&auto=format&fit=crop" class="card-img-top" alt="Featured House">
+                            <div class="card-body p-3">
+                                <h5 class="card-title mb-1">Desert House</h5>
+                                <p class="card-text text-muted">Marrakech, Morocco</p>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Why Wanderlust Section -->
+        <section class="content-section" id="why-us-section">
+            <div class="container">
+                <div class="section-heading"><h2>Why Choose Wanderlust?</h2></div>
+                <div class="row align-items-center">
+                    <div class="col-lg-6">
+                        <div id="globe-container"></div>
+                    </div>
+                    <div class="col-lg-6">
+                         <div class="row">
+                            <div class="col-md-6 mb-4 benefit-item"><i class="fas fa-globe-americas benefit-icon"></i><h5 class="fw-bold">Global Listings</h5><p class="text-muted">From remote cabins to city lofts, find the perfect stay anywhere in the world.</p></div>
+                            <div class="col-md-6 mb-4 benefit-item"><i class="fas fa-check-circle benefit-icon"></i><h5 class="fw-bold">Verified Stays</h5><p class="text-muted">Every listing is vetted for quality and safety, so you can book with confidence.</p></div>
+                            <div class="col-md-6 mb-4 benefit-item"><i class="fas fa-headset benefit-icon"></i><h5 class="fw-bold">24/7 Support</h5><p class="text-muted">Our dedicated support team is always here to help you, day or night.</p></div>
+                            <div class="col-md-6 mb-4 benefit-item"><i class="fas fa-wallet benefit-icon"></i><h5 class="fw-bold">Secure Payments</h5><p class="text-muted">Your payments are encrypted and secure, protecting you from fraud.</p></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Testimonials Section -->
+        <section class="content-section" id="testimonials">
+            <div class="container">
+                <div class="section-heading"><h2>Stories from Our Community</h2></div>
+                <div class="row">
+                    <div class="col-md-6 col-lg-4 mx-auto mb-4">
+                        <div class="testimonial-card">
+                            <i class="fas fa-user-circle testimonial-icon"></i>
+                            <p class="h5">"Wanderlust made finding our dream vacation rental a breeze! The entire process was seamless, and the stay was unforgettable. Highly recommend!"</p>
+                            <p class="mt-3 text-muted">- Sarah L.</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-lg-4 mx-auto mb-4">
+                        <div class="testimonial-card">
+                            <i class="fas fa-user-circle testimonial-icon"></i>
+                            <p class="h5">"I've used many booking sites, but the quality of listings on Wanderlust is unmatched. A fantastic platform for any serious traveler."</p>
+                            <p class="mt-3 text-muted">- Michael B.</p>
+                        </div>
+                    </div>
+                     <div class="col-md-6 col-lg-4 mx-auto mb-4">
+                        <div class="testimonial-card">
+                            <i class="fas fa-user-circle testimonial-icon"></i>
+                            <p class="h5">"The 24/7 support was a lifesaver when we had a late-night check-in issue. The team was friendly, fast, and incredibly helpful."</p>
+                            <p class="mt-3 text-muted">- Emily C.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Final CTA Section -->
+        <section class="content-section text-center" id="cta-section">
+            <div class="container">
+                <h2 class="display-5 fw-bold">Your Next Adventure Awaits</h2>
+                <p class="lead my-4">Don't just dream about it. Discover, book, and live your next great story with Wanderlust.</p>
+                <a href="/listings" class="btn btn-light btn-lg px-5 py-3 rounded-pill">Start Exploring Now</a>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer text-center" style="background-color: #0D1117; padding: 40px 0; border-top: 1px solid #30363D;">
+        <div class="container">
+            <p class="text-muted">&copy; 2025 Wanderlust. All Rights Reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap 5 JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Three.js Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+    <script>
+        // --- Three.js 360 Degree Image Scene ---
+        document.addEventListener('DOMContentLoaded', () => {
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            const renderer = new THREE.WebGLRenderer({ 
+                canvas: document.querySelector('#threejs-canvas'),
+                alpha: true 
+            });
+
+            renderer.setSize(window.innerWidth, window.innerHeight);
+
+            const geometry = new THREE.SphereGeometry(500, 60, 40);
+            geometry.scale(-1, 1, 1);
+
+            const texture = new THREE.TextureLoader().load(
+                'https://images.unsplash.com/photo-1506744038136-46273834b3fb?q=80&w=2940&auto=format&fit=crop',
+                () => {
+                    animate();
+                }
+            );
+            texture.encoding = THREE.sRGBEncoding;
+            const material = new THREE.MeshBasicMaterial({ map: texture });
+
+            const sphere = new THREE.Mesh(geometry, material);
+            scene.add(sphere);
+
+            camera.position.set(0, 0, 0.1);
+
+            let isUserInteracting = false,
+            onPointerDownMouseX = 0, onPointerDownMouseY = 0,
+            lon = 0, onPointerDownLon = 0,
+            lat = 0, onPointerDownLat = 0,
+            phi = 0, theta = 0;
+
+            function onPointerDown(event) {
+                isUserInteracting = true;
+                const clientX = event.clientX || event.touches[0].clientX;
+                const clientY = event.clientY || event.touches[0].clientY;
+                onPointerDownMouseX = clientX;
+                onPointerDownMouseY = clientY;
+                onPointerDownLon = lon;
+                onPointerDownLat = lat;
+            }
+
+            function onPointerMove(event) {
+                if (isUserInteracting === true) {
+                    const clientX = event.clientX || event.touches[0].clientX;
+                    const clientY = event.clientY || event.touches[0].clientY;
+                    lon = (onPointerDownMouseX - clientX) * 0.1 + onPointerDownLon;
+                    lat = (clientY - onPointerDownMouseY) * 0.1 + onPointerDownLat;
+                }
+            }
+
+            function onPointerUp() {
+                isUserInteracting = false;
+            }
+
+            function animate() {
+                requestAnimationFrame(animate);
+                if (!isUserInteracting) {
+                    lon += 0.05;
+                }
+                lat = Math.max(-85, Math.min(85, lat));
+                phi = THREE.MathUtils.degToRad(90 - lat);
+                theta = THREE.MathUtils.degToRad(lon);
+                const x = 500 * Math.sin(phi) * Math.cos(theta);
+                const y = 500 * Math.cos(phi);
+                const z = 500 * Math.sin(phi) * Math.sin(theta);
+                camera.lookAt(x, y, z);
+                renderer.render(scene, camera);
+            }
+
+            window.addEventListener('resize', () => {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+            });
+
+            const canvas = renderer.domElement;
+            canvas.addEventListener('mousedown', onPointerDown);
+            canvas.addEventListener('mousemove', onPointerMove);
+            canvas.addEventListener('mouseup', onPointerUp);
+            canvas.addEventListener('mouseleave', onPointerUp);
+            canvas.addEventListener('touchstart', onPointerDown, { passive: true });
+            canvas.addEventListener('touchmove', onPointerMove, { passive: true });
+            canvas.addEventListener('touchend', onPointerUp);
+
+        });
+
+        // --- Three.js Interactive Globe ---
+        document.addEventListener('DOMContentLoaded', () => {
+            const globeContainer = document.getElementById('globe-container');
+            if (!globeContainer) return;
+
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(75, globeContainer.clientWidth / globeContainer.clientHeight, 0.1, 1000);
+            const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+            renderer.setSize(globeContainer.clientWidth, globeContainer.clientHeight);
+            globeContainer.appendChild(renderer.domElement);
+
+            const geometry = new THREE.SphereGeometry(1, 32, 32);
+            const textureLoader = new THREE.TextureLoader();
+            const texture = textureLoader.load('https://raw.githubusercontent.com/jthatch/web-dev-assets/main/earth-texture-night.jpg');
+            texture.encoding = THREE.sRGBEncoding;
+            const material = new THREE.MeshBasicMaterial({ map: texture });
+            const globe = new THREE.Mesh(geometry, material);
+            scene.add(globe);
+
+            camera.position.z = 2.5;
+
+            let isDragging = false;
+            let previousMousePosition = { x: 0, y: 0 };
+
+            globeContainer.addEventListener('mousedown', e => { isDragging = true; });
+            globeContainer.addEventListener('mouseup', e => { isDragging = false; });
+            globeContainer.addEventListener('mouseleave', e => { isDragging = false; });
+            
+            globeContainer.addEventListener('mousemove', e => {
+                if (isDragging) {
+                    const deltaMove = {
+                        x: e.offsetX - previousMousePosition.x,
+                        y: e.offsetY - previousMousePosition.y
+                    };
+                    globe.rotation.y += deltaMove.x * 0.005;
+                    globe.rotation.x += deltaMove.y * 0.005;
+                }
+                previousMousePosition = { x: e.offsetX, y: e.offsetY };
+            });
+            
+            // Touch events for mobile
+            globeContainer.addEventListener('touchstart', e => { isDragging = true; previousMousePosition = { x: e.touches[0].clientX, y: e.touches[0].clientY }; }, { passive: true });
+            globeContainer.addEventListener('touchend', e => { isDragging = false; });
+            globeContainer.addEventListener('touchmove', e => {
+                 if (isDragging) {
+                    const deltaMove = {
+                        x: e.touches[0].clientX - previousMousePosition.x,
+                        y: e.touches[0].clientY - previousMousePosition.y
+                    };
+                    globe.rotation.y += deltaMove.x * 0.005;
+                    globe.rotation.x += deltaMove.y * 0.005;
+                    previousMousePosition = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+                }
+            }, { passive: true });
+
+            function animateGlobe() {
+                requestAnimationFrame(animateGlobe);
+                if (!isDragging) {
+                    globe.rotation.y += 0.001;
+                }
+                renderer.render(scene, camera);
+            }
+            animateGlobe();
+
+             window.addEventListener('resize', () => {
+                camera.aspect = globeContainer.clientWidth / globeContainer.clientHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(globeContainer.clientWidth, globeContainer.clientHeight);
+            });
+        });
+
+    </script>
+
+</body>
+</html>

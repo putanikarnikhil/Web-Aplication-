@@ -19,6 +19,10 @@ module.exports.listingSchema = Joi.object({
       'number.base': 'Price must be a number.',
       'number.min': 'Price must be at least 0.',
       'any.required': 'Price is required.'
+    }),
+    // --- ✨ THIS IS THE NEWLY ADDED FIELD ---
+    category: Joi.string().required().messages({
+        'string.empty': 'Category is required.'
     })
     // Do NOT validate image here, since it comes from multer (req.file)
   }).required()
